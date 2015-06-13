@@ -1,8 +1,7 @@
 import React from 'react';
 import Home from './components/home';
 
-//console.log(require('modernizr'));
-console.log(require('easeljs'));
+require('browsernizr');
 
 window.React = React;
 const mountNode = document.getElementById('app');
