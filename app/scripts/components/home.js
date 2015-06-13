@@ -1,4 +1,5 @@
 import React from 'react';
+import Board from './board';
 
 export default class extends React.Component {
   constructor(props) {
@@ -21,6 +22,7 @@ export default class extends React.Component {
         <p>This is a React component.<br/>
            You now also have:</p>
         <ul>{this.state.items.map(this.renderItem)}</ul>
+        <Board/>
       </div>
     );
   }
