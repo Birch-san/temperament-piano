@@ -50,7 +50,8 @@ var bundler = {
     return this.w && this.w.bundle()
       .on('error', $.util.log.bind($.util, 'Browserify Error'))
       .pipe(source('app.js'))
-      .pipe(gulp.dest('dist/scripts'));
+      .pipe(gulp.dest('dist/scripts'))
+      .pipe($.connect.reload());
   },
   watch: function() {
     this.w && this.w.on('update', this.bundle.bind(this));
@@ -113,11 +114,15 @@ gulp.task('extras', function () {
 });
 
 gulp.task('serve', function() {
-  gulp.src('dist')
+  /*gulp.src('dist')
     .pipe($.webserver({
       livereload: true,
       port: 9000
-    }));
+    }));*/
+  $.connect.server({
+    root: 'dist',
+    livereload: true
+  });
 });
 
 gulp.task('jest', function () {
