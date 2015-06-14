@@ -2,6 +2,7 @@
   "name": "piano",
   "version": "0.0.0",
   "dependencies": {
+    "babel-runtime": "^5.5.8",
     "browserify": "^10.2.4",
     "browserify-incremental": "^3.0.1",
     "browserify-shim": "^3.8.8",
