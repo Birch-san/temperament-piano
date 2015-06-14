@@ -1,6 +1,6 @@
 import React from 'react';
 
-//var createjs = require('easeljs');
+var createjs = require('easeljs');
 
 export default class extends React.Component {
   constructor(props) {
