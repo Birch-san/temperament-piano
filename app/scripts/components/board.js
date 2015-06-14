@@ -27,7 +27,49 @@ export default class extends React.Component {
 		};
 	}
 
+	applyInterval(tonic:number, quality:string, times:int = 1) {
+		if (times === 0) return tonic;
+		let harmonic = ()=> {
+			switch(quality) {
+				case "8ve":
+					return 2;
+				case "5th":
+					return 3;
+				case "M3rd":
+					return 4;
+				case "m3rd":
+					return 5;
+			}
+		}(quality);
+		return tonic*Math.pow(harmonic, times);
+	}
+
+	/**
+	 * From some identity coefficient returns a tetrachord by
+	 * the specified quality — expressed as an array of
+	 * coefficients relative to the base frequency.
+	 * Not normalized to within an octave.
+	 */
+	buildTetrachord(tonic:number, major:boolean) {
+		return [
+			tonic,
+			this.applyInterval(tonic, `${major?'M':'m'}3rd`),
+			this.applyInterval(tonic, "5th")
+		];
+	}
+
+	buildNeighbouringTetrachords(tonic:number, major:boolean, distance:int = 1) {
+		let neighbours = _.range(-distance, distance+1);
+		let neighbourTetrachords = _.map(neighbours, (neighbourIndex) => {
+			let neighbourTonic = this.applyInterval(tonic, "5th", neighbourIndex);
+			return this.buildTetrachord(neighbourTonic, true, major);
+		})
+		return _.uniq(_.flatten(neighbourTetrachords));
+	}
+
 	render() {
+
+		console.log(this.buildNeighbouringTetrachords(1));
 		let startCharCode = this.state.scaleRoot.charCodeAt(0);
 		let keys=_(_.range(this.state.scale.length))
 			.map(delta => {
