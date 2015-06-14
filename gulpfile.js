@@ -5,21 +5,27 @@ var $          = require('gulp-load-plugins')();
 var sync       = $.sync(gulp).sync;
 var del        = require('del');
 var browserify = require('browserify');
+var browserifyInc = require('browserify-incremental');
+var xtend = require('xtend');
 var watchify   = require('watchify');
 var source     = require('vinyl-source-stream');
 var path       = require('path');
 
 require('harmonize')();
 
-var bundler = {
+var b = browserify(xtend(browserifyInc.args, {
+  entries: ['./app/scripts/app.js'],
+  insertGlobals: true,
+  cache: {},
+  packageCache: {}
+}));
+browserifyInc(b, {cacheFile: './browserify-cache.json'});
+//b.bundle().pipe(process.stdout);
+
+/*var bundler = {
   w: null,
   init: function() {
-    this.w = watchify(browserify({
-      entries: ['./app/scripts/app.js'],
-      insertGlobals: true,
-      cache: {},
-      packageCache: {}
-    }));
+    this.w = watchify();
   },
   bundle: function() {
     return this.w && this.w.bundle()
@@ -33,7 +39,7 @@ var bundler = {
   stop: function() {
     this.w && this.w.close();
   }
-};
+};*/
 
 gulp.task('styles', function() {
   return $.rubySass('app/styles/main.scss', {
@@ -48,8 +54,10 @@ gulp.task('styles', function() {
 });
 
 gulp.task('scripts', function() {
-  bundler.init();
-  return bundler.bundle();
+  //bundler.init();
+  //return bundler.bundle();
+  return b.bundle()
+      .pipe(process.stdout);
 });
 
 gulp.task('html', function() {
