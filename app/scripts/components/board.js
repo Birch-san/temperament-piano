@@ -14,10 +14,7 @@ export default class extends React.Component {
 
   render() {
     return (
-      <div>
-        <h2>Sup brah</h2>
         <ul>{this.state.keys.map(this.renderItem)}</ul>
-      </div>
     );
   }
 
