@@ -5,11 +5,12 @@ var $          = require('gulp-load-plugins')();
 var sync       = $.sync(gulp).sync;
 var del        = require('del');
 var browserify = require('browserify');
-var browserifyInc = require('browserify-incremental');
-//var xtend = require('xtend');
+//var browserifyInc = require('browserify-incremental');
+var xtend = require('xtend');
 var watchify   = require('watchify');
 var source     = require('vinyl-source-stream');
 var path       = require('path');
+var util = require('util');
 
 require('harmonize')();
 
@@ -29,14 +30,21 @@ browserifyInc(b, {cacheFile: './browserify-cache.json'});
 var bundler = {
   w: null,
   init: function() {
-    this.w = watchify(browserify({
+    this.w = watchify(browserify(xtend(watchify.args, {
       entries: ['./app/scripts/app.js'],
       insertGlobals: false,
       detectGlobals: true,
-      noParse:['easeljs', '$', "modernizr"],
-      cache: {},
-      packageCache: {}
-    }));
+      noParse:['easeljs', '$', "modernizr"]
+    })), {
+        ignoreWatch: true,
+        delay: 0
+    })
+    .on('update', function(ids) {
+      console.log(util.format("Bundles that changed: [%s]", ids.join(", ")));
+    })
+    .on('log', function(msg) {
+        console.log(msg);
+        });
   },
   bundle: function() {
     return this.w && this.w.bundle()
