@@ -27,18 +27,19 @@ export default class extends React.Component {
 		};
 	}
 
+	//Math.pow(Math.pow(2, 1/12), 7)
+	// https://en.wikipedia.org/wiki/File:Harmonic_series_intervals.png
 	applyInterval(tonic:number, quality:string, times:int = 1) {
-		if (times === 0) return tonic;
 		let harmonic = ()=> {
 			switch(quality) {
+				case "M3rd":
+					return 5/4;
+				case "4th":
+					return 4/3;
+				case "5th":
+					return 3/2;
 				case "8ve":
 					return 2;
-				case "5th":
-					return 3;
-				case "M3rd":
-					return 4;
-				case "m3rd":
-					return 5;
 			}
 		}(quality);
 		return tonic*Math.pow(harmonic, times);
@@ -67,9 +68,16 @@ export default class extends React.Component {
 		return _.uniq(_.flatten(neighbourTetrachords));
 	}
 
-	render() {
+	/**
+	 * Normalizes frequency coefficient to be within an octave (whose frequency ranges 1–2)
+	 */
+	normalize(frequency:number) {
+		return frequency*Math.pow(2, -Math.floor(Math.log2(frequency)));
+	}
 
-		console.log(this.buildNeighbouringTetrachords(1));
+	render() {
+		let frequencies = this.buildNeighbouringTetrachords(1);
+		let normalized = _.map(frequencies, this.normalize);
 		let startCharCode = this.state.scaleRoot.charCodeAt(0);
 		let keys=_(_.range(this.state.scale.length))
 			.map(delta => {
