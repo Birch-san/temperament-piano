@@ -1,7 +1,7 @@
 import React from 'react';
 import Home from './components/home';
 
-require('browsernizr');
+//require('browsernizr');
 
 window.React = React;
 const mountNode = document.getElementById('app');

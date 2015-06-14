@@ -1,6 +1,6 @@
 import React from 'react';
 
-var createjs = require('easeljs');
+//var createjs = require('easeljs');
 
 export default class extends React.Component {
   constructor(props) {
@@ -21,7 +21,7 @@ export default class extends React.Component {
   render() {
     return (
       <div>
-        <h3>I'm the {this.props.label} key, brah yo</h3>
+        <h3>I'm the {this.props.label} key</h3>
         <canvas id={this.state.canvasID}></canvas>
       </div>
     );
