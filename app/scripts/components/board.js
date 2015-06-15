@@ -21,9 +21,8 @@ export default class extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			scaleRoot: "A",
-			scale: [2,1,2,2,1,2,2],
-			scaleMode: "C"
+			scaleMode: "C",
+			accidentals: 5
 		};
 	}
 
@@ -59,13 +58,13 @@ export default class extends React.Component {
 		];
 	}
 
-	buildNeighbouringTetrachords(tonic:number, major:boolean, distance:int = 1) {
-		let neighbours = _.range(-distance, distance+1);
+	buildNeighbouringTetrachords(tonic:number, major:boolean, distanceDominant:int, distanceSubdominant:int) {
+		let neighbours = _.range(-distanceSubdominant, distanceDominant+1);
 		let neighbourTetrachords = _.map(neighbours, (neighbourIndex) => {
 			let neighbourTonic = this.applyInterval(tonic, "5th", neighbourIndex);
 			return this.buildTetrachord(neighbourTonic, true, major);
 		})
-		return _.uniq(_.flatten(neighbourTetrachords));
+		return _.flatten(neighbourTetrachords);
 	}
 
 	/**
@@ -76,24 +75,85 @@ export default class extends React.Component {
 	}
 
 	render() {
-		let frequencies = this.buildNeighbouringTetrachords(1);
-		let normalized = _.map(frequencies, this.normalize);
-		let startCharCode = this.state.scaleRoot.charCodeAt(0);
-		let keys=_(_.range(this.state.scale.length))
-			.map(delta => {
-				return String.fromCharCode(startCharCode+delta)
-			})
-			.value();
+		let naturalFrequencies = _.uniq(
+			_.map(
+				this.buildNeighbouringTetrachords(1, true, 1, 1),
+				this.normalize
+			)
+		).sort();
+		let sharpFrequencies = _.uniq(
+			_.without(
+				_.map(
+					this.buildNeighbouringTetrachords(1, true, this.state.accidentals, 0),
+					this.normalize
+				),
+				naturalFrequencies
+			)
+		).sort();
+		let flatFrequencies = _.uniq(
+			_.without(
+				_.map(
+					this.buildNeighbouringTetrachords(1, true, 0, this.state.accidentals),
+					this.normalize
+				),
+				naturalFrequencies
+			)
+		).sort();
 
-		let scaleBaseIndex = _.indexOf(keys, this.state.scaleMode);
-		let scaleModulusMode = _.slice(keys, scaleBaseIndex).concat(_.slice(keys, 0, scaleBaseIndex));
+		let scaleRoot = "A";
+		let startCharCode = scaleRoot.charCodeAt(0);
+		let naturalKeySet = _.map(naturalFrequencies,
+			(frequency, index) => {
+				return {
+					frequency: frequency,
+					label: String.fromCharCode(startCharCode + index)
+				};
+			}
+		);
+
+		let scaleBaseIndex = _.indexOf(_.pluck(naturalKeySet, 'label'), this.state.scaleMode);
+		let scaleModuloMode = _.slice(naturalKeySet, scaleBaseIndex).concat(_.slice(naturalKeySet, 0, scaleBaseIndex));
+
+		let sharpKeys = _.map(sharpFrequencies,
+			(frequency) => {
+				let insertionPoint = _.sortedIndex(_.pluck(scaleModuloMode, 'frequency'), frequency);
+
+				let relatedNaturalKey = scaleModuloMode[insertionPoint%scaleModuloMode.length];
+
+				return {
+					frequency: frequency,
+					label: `${relatedNaturalKey.label}${"#".repeat(Math.floor(insertionPoint/scaleModuloMode.length)+1)}`
+				};
+			}
+		);
+
+		let flatKeys = _.map(flatFrequencies,
+			(frequency) => {
+				function absmod(n, m) {
+					return ((n % m) + m) % m;
+				}
+
+				let insertionPoint = _.sortedIndex(_.pluck(scaleModuloMode, 'frequency'), frequency)-1;
+
+				let relatedNaturalKey = scaleModuloMode[absmod(insertionPoint,scaleModuloMode.length)];
+
+				return {
+					frequency: frequency,
+					label: `${relatedNaturalKey.label}${"b".repeat(Math.floor(insertionPoint/scaleModuloMode.length)+1)}`
+				};
+			}
+		);
 
 		return (
-			<ul>{scaleModulusMode.map(this.renderItem)}</ul>
+			<div>
+				<ul>{scaleModuloMode.map(this.renderItem)}</ul>
+				<ul>{sharpKeys.map(this.renderItem)}</ul>
+				<ul>{flatKeys.map(this.renderItem)}</ul>
+			</div>
 		);
 	}
 
 	renderItem(item, index) {
-		return <li key={index}><Key label={item}>{item}</Key></li>;
+		return <li key={index}><Key index={index} label={item.label}>{item.label}</Key></li>;
 	}
 }
