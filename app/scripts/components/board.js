@@ -136,7 +136,7 @@ export default class extends React.Component {
 		}
 
 		let sharpKeys = _.map(sharpFrequencies,
-			(frequency) => {
+			(frequency, index) => {
 				// for example if I'm after A, my insertion point is A's index + 1
 				let insertionPoint = _.sortedLastIndex(_.pluck(scaleModuloMode, 'frequency'), frequency);
 				let indexNaturalBelow = insertionPoint-1;
@@ -144,18 +144,17 @@ export default class extends React.Component {
 				let relatedNaturalKey = scaleModuloMode[absmod(indexNaturalBelow,scaleModuloMode.length)];
 
 				// sharps (for CM) are: F,C,G and so on up in fifths.
-				let timesSharpened = 1;
-				//Math.floor(relatedNaturalKeyIndex/scaleModuloMode.length)+1
+				let timesSharpened = Math.floor(index/scaleModuloMode.length)+1;
 
 				return {
 					frequency: frequency,
-					label: `${relatedNaturalKey.label}${"#".repeat(timesSharpened)}`
+					label: `${relatedNaturalKey.label}${"♯".repeat(timesSharpened)}`
 				};
 			}
 		);
 
 		let flatKeys = _.map(flatFrequencies,
-			(frequency) => {
+			(frequency, index) => {
 
 				// for example if I'm after A, my insertion point is A's index + 1
 				// and I am the flat of the guy currently at my insertion point
@@ -164,12 +163,11 @@ export default class extends React.Component {
 
 				let relatedNaturalKey = scaleModuloMode[absmod(indexNaturalAbove, scaleModuloMode.length)];
 
-				let timesFlattened = 1;
-				// Math.floor(relatedNaturalKeyIndex/scaleModuloMode.length)+1
+				let timesFlattened = Math.floor(index/scaleModuloMode.length)+1;
 
 				return {
 					frequency: frequency,
-					label: `${relatedNaturalKey.label}${"b".repeat(timesFlattened)}`
+					label: `${relatedNaturalKey.label}${"♭".repeat(timesFlattened)}`
 				};
 			}
 		);
