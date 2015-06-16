@@ -114,14 +114,25 @@ export default class extends React.Component {
 			}
 		);
 
-		let scaleBaseIndex = _.indexOf(_.pluck(naturalKeySet, 'label'), this.state.scaleMode);
-		let scaleModuloMode = _.slice(naturalKeySet, scaleBaseIndex).concat(_.slice(naturalKeySet, 0, scaleBaseIndex));
+
+		let naturalLabels = _.pluck(naturalKeySet, 'label');
+		let scaleBaseIndex = _.indexOf(naturalLabels, this.state.scaleMode);
+		let scaleModuloModeLabels = _.slice(naturalLabels, scaleBaseIndex).concat(_.slice(naturalLabels, 0, scaleBaseIndex));
+		let scaleModuloMode = _.map(naturalKeySet, (obj, index) => {
+			return _.extend(obj, {
+				label: scaleModuloModeLabels[index]
+			});
+		});
+
+		function absmod(n, m) {
+			return ((n % m) + m) % m;
+		}
 
 		let sharpKeys = _.map(sharpFrequencies,
 			(frequency) => {
-				let insertionPoint = _.sortedIndex(_.pluck(scaleModuloMode, 'frequency'), frequency);
+				let insertionPoint = _.sortedLastIndex(_.pluck(scaleModuloMode, 'frequency'), frequency);
 
-				let relatedNaturalKey = scaleModuloMode[insertionPoint%scaleModuloMode.length];
+				let relatedNaturalKey = scaleModuloMode[absmod(insertionPoint-1,scaleModuloMode.length)];
 
 				return {
 					frequency: frequency,
@@ -132,13 +143,10 @@ export default class extends React.Component {
 
 		let flatKeys = _.map(flatFrequencies,
 			(frequency) => {
-				function absmod(n, m) {
-					return ((n % m) + m) % m;
-				}
 
-				let insertionPoint = _.sortedIndex(_.pluck(scaleModuloMode, 'frequency'), frequency)-1;
+				let insertionPoint = _.sortedLastIndex(_.pluck(scaleModuloMode, 'frequency'), frequency)-1;
 
-				let relatedNaturalKey = scaleModuloMode[absmod(insertionPoint,scaleModuloMode.length)];
+				let relatedNaturalKey = scaleModuloMode[absmod(insertionPoint-1,scaleModuloMode.length)];
 
 				return {
 					frequency: frequency,
