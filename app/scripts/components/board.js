@@ -22,7 +22,7 @@ export default class extends React.Component {
 		super(props);
 		this.state = {
 			scaleMode: "C",
-			accidentals: 5
+			accidentals: 4
 		};
 	}
 
@@ -135,41 +135,49 @@ export default class extends React.Component {
 			return ((n % m) + m) % m;
 		}
 
-		let sharpKeys = _.map(sharpFrequencies,
-			(frequency, index) => {
+		let sharpKeys = _.without.apply(
+			null,
+			[
+				_.reduce(sharpFrequencies,
+			(accumulator, frequency) => {
 				// for example if I'm after A, my insertion point is A's index + 1
-				let insertionPoint = _.sortedLastIndex(_.pluck(scaleModuloMode, 'frequency'), frequency);
-				let indexNaturalBelow = insertionPoint-1;
+				let insertionPoint = _.sortedLastIndex(_.pluck(accumulator, 'frequency'), frequency);
+				let indexKeyBelow = insertionPoint-1;
 
-				let relatedNaturalKey = scaleModuloMode[absmod(indexNaturalBelow,scaleModuloMode.length)];
+				let relatedKey = accumulator[absmod(indexKeyBelow,accumulator.length)];
 
-				// sharps (for CM) are: F,C,G and so on up in fifths.
-				let timesSharpened = Math.floor(index/scaleModuloMode.length)+1;
-
-				return {
+				accumulator.splice(insertionPoint, 0, {
 					frequency: frequency,
-					label: `${relatedNaturalKey.label}${"♯".repeat(timesSharpened)}`
-				};
-			}
+					label: `${relatedKey.label}♯`
+				});
+				return accumulator;
+			},
+			_.clone(scaleModuloMode)
+		)
+			].concat(scaleModuloMode)
 		);
 
-		let flatKeys = _.map(flatFrequencies,
-			(frequency, index) => {
-
+		let flatKeys = _.without.apply(
+			null,
+			[
+				_.reduce(flatFrequencies,
+			(accumulator, frequency) => {
 				// for example if I'm after A, my insertion point is A's index + 1
 				// and I am the flat of the guy currently at my insertion point
-				let insertionPoint = _.sortedLastIndex(_.pluck(scaleModuloMode, 'frequency'), frequency);
-				let indexNaturalAbove = insertionPoint;
+				let insertionPoint = _.sortedLastIndex(_.pluck(accumulator, 'frequency'), frequency);
+				let indexKeyAbove = insertionPoint;
 
-				let relatedNaturalKey = scaleModuloMode[absmod(indexNaturalAbove, scaleModuloMode.length)];
+				let relatedKey = accumulator[absmod(indexKeyAbove, accumulator.length)];
 
-				let timesFlattened = Math.floor(index/scaleModuloMode.length)+1;
-
-				return {
+				accumulator.splice(insertionPoint, 0, {
 					frequency: frequency,
-					label: `${relatedNaturalKey.label}${"♭".repeat(timesFlattened)}`
-				};
-			}
+					label: `${relatedKey.label}♭`
+				});
+				return accumulator;
+			},
+			_.clone(scaleModuloMode)
+		)
+		].concat(scaleModuloMode)
 		);
 
 		return (
