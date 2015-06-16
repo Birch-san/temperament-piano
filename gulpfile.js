@@ -70,7 +70,8 @@ gulp.task('styles', function() {
     .on('error', $.util.log.bind($.util, 'Sass Error'))
     .pipe($.autoprefixer('last 1 version'))
     .pipe(gulp.dest('dist/styles'))
-    .pipe($.size());
+    .pipe($.size())
+	  .pipe($.connect.reload());
 });
 
 gulp.task('scripts', function() {

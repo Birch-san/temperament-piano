@@ -7,6 +7,19 @@ body {
   color: #333;
 }
 
+ul {
+  float:left;
+}
+
+li {
+  list-style-type:none;
+}
+
+canvas {
+  width: 100px;
+  height: 100px;
+}
+
 //.hero-unit {
 //  margin: 50px auto;
 //  width: 400px;

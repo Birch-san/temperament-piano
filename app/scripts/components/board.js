@@ -90,6 +90,7 @@ export default class extends React.Component {
 				naturalFrequencies
 			)
 		).sort();
+
 		let flatFrequencies = _.uniq(
 			_.without(
 				_.map(
@@ -154,6 +155,6 @@ export default class extends React.Component {
 	}
 
 	renderItem(item, index) {
-		return <li key={index}><Key index={index} label={item.label}>{item.label}</Key></li>;
+		return <li key={index}><Key index={index} note={item}>{item.label}</Key></li>;
 	}
 }

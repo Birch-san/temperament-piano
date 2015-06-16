@@ -6,7 +6,7 @@ export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      canvasID: `${props.index}-canvas`
+      canvasID: `${props.note.label}-${props.note.frequency}-canvas`
     };
   }
 
@@ -21,7 +21,7 @@ export default class extends React.Component {
   render() {
     return (
       <div>
-        <h3>I'm the {this.props.label} key</h3>
+        <h3>{this.props.note.label} {this.props.note.frequency.toFixed(2)}</h3>
         <canvas id={this.state.canvasID}></canvas>
       </div>
     );
