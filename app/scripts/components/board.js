@@ -75,11 +75,16 @@ export default class extends React.Component {
 	}
 
 	render() {
+		function forgivingUnique(n) {
+			return n.toFixed(5);
+		}
+
 		let naturalFrequencies = _.uniq(
 			_.map(
 				this.buildNeighbouringTetrachords(1, true, 1, 1),
 				this.normalize
-			)
+			),
+			forgivingUnique
 		).sort();
 		let sharpFrequencies = _.uniq(
 			_.without.apply(
@@ -89,7 +94,8 @@ export default class extends React.Component {
 					this.buildNeighbouringTetrachords(1, true, this.state.accidentals, 0),
 					this.normalize)
 				].concat(naturalFrequencies)
-			)
+			),
+			forgivingUnique
 		).sort();
 
 		let flatFrequencies = _.uniq(
@@ -100,7 +106,8 @@ export default class extends React.Component {
 					this.buildNeighbouringTetrachords(1, true, 0, this.state.accidentals),
 					this.normalize)
 				].concat(naturalFrequencies)
-			)
+			),
+			forgivingUnique
 		).sort();
 
 		let scaleRoot = "A";
@@ -130,13 +137,19 @@ export default class extends React.Component {
 
 		let sharpKeys = _.map(sharpFrequencies,
 			(frequency) => {
+				// for example if I'm after A, my insertion point is A's index + 1
 				let insertionPoint = _.sortedLastIndex(_.pluck(scaleModuloMode, 'frequency'), frequency);
+				let indexNaturalBelow = insertionPoint-1;
 
-				let relatedNaturalKey = scaleModuloMode[absmod(insertionPoint-1,scaleModuloMode.length)];
+				let relatedNaturalKey = scaleModuloMode[absmod(indexNaturalBelow,scaleModuloMode.length)];
+
+				// sharps (for CM) are: F,C,G and so on up in fifths.
+				let timesSharpened = 1;
+				//Math.floor(relatedNaturalKeyIndex/scaleModuloMode.length)+1
 
 				return {
 					frequency: frequency,
-					label: `${relatedNaturalKey.label}${"#".repeat(Math.floor(insertionPoint/scaleModuloMode.length)+1)}`
+					label: `${relatedNaturalKey.label}${"#".repeat(timesSharpened)}`
 				};
 			}
 		);
@@ -144,13 +157,19 @@ export default class extends React.Component {
 		let flatKeys = _.map(flatFrequencies,
 			(frequency) => {
 
-				let insertionPoint = _.sortedLastIndex(_.pluck(scaleModuloMode, 'frequency'), frequency)-1;
+				// for example if I'm after A, my insertion point is A's index + 1
+				// and I am the flat of the guy currently at my insertion point
+				let insertionPoint = _.sortedLastIndex(_.pluck(scaleModuloMode, 'frequency'), frequency);
+				let indexNaturalAbove = insertionPoint;
 
-				let relatedNaturalKey = scaleModuloMode[absmod(insertionPoint-1,scaleModuloMode.length)];
+				let relatedNaturalKey = scaleModuloMode[absmod(indexNaturalAbove, scaleModuloMode.length)];
+
+				let timesFlattened = 1;
+				// Math.floor(relatedNaturalKeyIndex/scaleModuloMode.length)+1
 
 				return {
 					frequency: frequency,
-					label: `${relatedNaturalKey.label}${"b".repeat(Math.floor(insertionPoint/scaleModuloMode.length)+1)}`
+					label: `${relatedNaturalKey.label}${"b".repeat(timesFlattened)}`
 				};
 			}
 		);
