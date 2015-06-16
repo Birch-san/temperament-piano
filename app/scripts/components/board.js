@@ -82,22 +82,24 @@ export default class extends React.Component {
 			)
 		).sort();
 		let sharpFrequencies = _.uniq(
-			_.without(
-				_.map(
+			_.without.apply(
+				null,
+				[
+					_.map(
 					this.buildNeighbouringTetrachords(1, true, this.state.accidentals, 0),
-					this.normalize
-				),
-				naturalFrequencies
+					this.normalize)
+				].concat(naturalFrequencies)
 			)
 		).sort();
 
 		let flatFrequencies = _.uniq(
-			_.without(
-				_.map(
+			_.without.apply(
+				null,
+				[
+					_.map(
 					this.buildNeighbouringTetrachords(1, true, 0, this.state.accidentals),
-					this.normalize
-				),
-				naturalFrequencies
+					this.normalize)
+				].concat(naturalFrequencies)
 			)
 		).sort();
 
