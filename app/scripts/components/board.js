@@ -22,7 +22,7 @@ export default class extends React.Component {
 		super(props);
 		this.state = {
 			scaleMode: "C",
-			accidentals: 4
+			accidentals: 5
 		};
 	}
 
@@ -160,7 +160,7 @@ export default class extends React.Component {
 		let flatKeys = _.without.apply(
 			null,
 			[
-				_.reduce(flatFrequencies,
+				_.reduceRight(flatFrequencies,
 			(accumulator, frequency) => {
 				// for example if I'm after A, my insertion point is A's index + 1
 				// and I am the flat of the guy currently at my insertion point
