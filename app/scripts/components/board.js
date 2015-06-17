@@ -22,7 +22,7 @@ export default class extends React.Component {
 		super(props);
 		this.state = {
 			scaleMode: "C",
-			rootFrequency: 440,
+			rootFrequency: 261.626,
 			accidentals: 5
 		};
 	}
