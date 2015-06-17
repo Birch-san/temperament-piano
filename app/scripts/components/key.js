@@ -21,7 +21,9 @@ export default class extends React.Component {
   render() {
     return (
       <div>
-        <h3>{this.props.note.label} {this.props.note.frequency.toFixed(2)}</h3>
+        <h3>{this.props.note.label} {this.props.note.frequency.toFixed(2)}
+	        <br/>
+	        ({(this.props.rootFrequency*this.props.note.frequency).toFixed(2)})</h3>
         <canvas id={this.state.canvasID}></canvas>
       </div>
     );

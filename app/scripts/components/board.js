@@ -22,6 +22,7 @@ export default class extends React.Component {
 		super(props);
 		this.state = {
 			scaleMode: "C",
+			rootFrequency: 440,
 			accidentals: 5
 		};
 	}
@@ -72,6 +73,24 @@ export default class extends React.Component {
 	 */
 	normalize(frequency:number) {
 		return frequency*Math.pow(2, -Math.floor(Math.log2(frequency)));
+	}
+
+	componentDidMount() {
+		// create web audio api context
+		var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+		var gainNode = audioCtx.createGain();
+
+		// create Oscillator node
+		var oscillator = audioCtx.createOscillator();
+
+		oscillator.type = 'sine';
+		oscillator.frequency.value = this.state.rootFrequency; // value in hertz
+		oscillator.connect(gainNode);
+		oscillator.start();
+
+		//gainNode.connect(audioCtx.destination);
+		//gainNode.disconnect(audioCtx.destination);
 	}
 
 	render() {
@@ -182,14 +201,14 @@ export default class extends React.Component {
 
 		return (
 			<div>
-				<ul>{scaleModuloMode.map(this.renderItem)}</ul>
-				<ul>{sharpKeys.map(this.renderItem)}</ul>
-				<ul>{flatKeys.map(this.renderItem)}</ul>
+				<ul>{scaleModuloMode.map(this.renderItem, this)}</ul>
+				<ul>{sharpKeys.map(this.renderItem, this)}</ul>
+				<ul>{flatKeys.map(this.renderItem, this)}</ul>
 			</div>
 		);
 	}
 
 	renderItem(item, index) {
-		return <li key={index}><Key index={index} note={item}>{item.label}</Key></li>;
+		return <li key={index}><Key index={index} note={item} rootFrequency={this.state.rootFrequency}>{item.label}</Key></li>;
 	}
 }
