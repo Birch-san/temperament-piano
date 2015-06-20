@@ -8,11 +8,25 @@ body {
 }
 
 .octaveList > li {
-  float: left;
+  display:inline-block;
+}
+
+.keyListList {
+  //float: left;
+  display:block;
 }
 
 .keyListList > li {
-  float: left;
+  //float: left;
+  display:block;
+}
+
+.keyList {
+  //float: left;
+  display:block;
+}
+.keyList > li {
+  display:inline-block;
 }
 
 li {

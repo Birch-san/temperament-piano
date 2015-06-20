@@ -20,9 +20,9 @@ export default class extends React.Component {
 		return (
 			<div>
 				<ul className={keyListListClasses}>
-					<li><ol className={keyListClasses}>{this.props.scaleModuloMode.map(this.renderItem, this)}</ol></li>
 					<li><ol className={keyListClasses}>{this.props.sharpKeys.map(this.renderItem, this)}</ol></li>
 					<li><ol className={keyListClasses}>{this.props.flatKeys.map(this.renderItem, this)}</ol></li>
+					<li><ol className={keyListClasses}>{this.props.scaleModuloMode.map(this.renderItem, this)}</ol></li>
 				</ul>
 			</div>
 		);
