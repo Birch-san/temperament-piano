@@ -291,7 +291,7 @@ export default class extends React.Component {
 		let oscillator = audioCtx.createOscillator();
 		oscillator.connect(gainNode);
 
-		oscillator.type = 'sine';
+		oscillator.type = 'square';
 		oscillator.frequency.value = absoluteFreq.qualify(); // value in hertz
 		oscillator.start();
 		console.log(absoluteFreq.qualify());

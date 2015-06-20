@@ -13,7 +13,19 @@ export default class extends React.Component {
   componentDidMount() {
     var stage = new createjs.Stage(this.state.canvasID);
     var shape = new createjs.Shape();
-    shape.graphics.beginFill('red').drawRect(0, 0, 120, 120);
+	  let accidentalness = (this.props.label
+		  .match(new RegExp("[♭|♯]", "g")) || []).length;
+	  console.log(accidentalness);
+    shape.graphics
+	    .setStrokeStyle(2)
+	    .beginStroke("#000000")
+	    .beginFill(
+	        accidentalness
+		    ? `#${Math.floor(0xFF*(1-Math.pow(2, -(accidentalness-1)))).toString(16).repeat(3)}`
+		        : "white"
+        )
+	    .drawRect(0, 0, 120, 120);
+	  //console.log(`#${Math.floor(0xFF*(1-Math.pow(2, -accidentalness))).toString(16).repeat(3)}`);
     stage.addChild(shape);
     stage.update();
   }
@@ -24,9 +36,9 @@ export default class extends React.Component {
 	      onClick={this.props.onClick}>
         <h3>{this.props.label} {this.props.normalizedFreq.qualify().toFixed(2)}
 	        <br/>
-	        {this.props.normalizedFreq.numerator}/{this.props.normalizedFreq.denominator}
+	        {this.props.normalizedFreq.numerator}÷{this.props.normalizedFreq.denominator}
 	        <br/>
-	        ({this.props.absoluteFreq.qualify().toFixed(2)})</h3>
+	        {this.props.absoluteFreq.qualify().toFixed(2)}Hz</h3>
         <canvas
 	        id={this.state.canvasID}
 
