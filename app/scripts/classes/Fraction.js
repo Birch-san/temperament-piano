@@ -51,6 +51,15 @@ export default class Fraction {
 		return this.numerator/this.denominator;
 	}
 
+	equals(frac:Fraction) {
+		return this.numerator === frac.numerator
+			&& this.denominator === frac.denominator;
+	}
+
+	greater(frac:Fraction) {
+		return this.qualify() > frac.qualify();
+	}
+
 	//toString() {
 	//	return this.qualify();
 	//}

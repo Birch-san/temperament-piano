@@ -101,11 +101,33 @@ export default class extends React.Component {
 
 	render() {
 		let forgivingUnique = (n:Fraction) => {
-			return n.qualify().toFixed(5);
+			return n.qualify();
 		};
 
 		let fractionSorter = (fraction:Fraction) => {
 			return fraction.qualify();
+		};
+
+		let withoutFractions = (nominal, exceptions) => {
+			let sortedNominal = _.sortBy(_.clone(nominal), fractionSorter);
+			let sortedExceptions = _.sortBy(_.clone(exceptions), fractionSorter);
+
+			let nominalStartLength = sortedNominal.length-1;
+			let exceptionsStartLength = sortedExceptions.length-1;
+			let exceptionsInsertion = exceptionsStartLength;
+			nominals:
+			for (let i=nominalStartLength; i>=0; i--) {
+				let nFrac = sortedNominal[i];
+				exceptionals:
+				for (let j=exceptionsInsertion; j>=0; j--) {
+					let eFrac = sortedExceptions[j];
+					if (nFrac.equals(eFrac)) {
+						sortedNominal.splice(i, 1);
+						continue nominals;
+					}
+				}
+			}
+			return sortedNominal;
 		};
 
 		let tonic = new Fraction(1);
@@ -122,13 +144,11 @@ export default class extends React.Component {
 		);
 		let sharpFrequencies = _.sortBy(
 			_.uniq(
-				_.without.apply(
-					null,
-					[
-						_.map(
+				withoutFractions(
+					_.map(
 						this.buildNeighbouringTetrachords(tonic, true, this.state.accidentals, 0),
-						this.normalizeFraction)
-					].concat(naturalFrequencies)
+						this.normalizeFraction),
+					naturalFrequencies
 				),
 				forgivingUnique
 			),
@@ -137,13 +157,11 @@ export default class extends React.Component {
 
 		let flatFrequencies = _.sortBy(
 			_.uniq(
-				_.without.apply(
-					null,
-					[
-						_.map(
+				withoutFractions(
+					_.map(
 						this.buildNeighbouringTetrachords(tonic, true, 0, this.state.accidentals),
-						this.normalizeFraction)
-					].concat(naturalFrequencies)
+						this.normalizeFraction),
+					naturalFrequencies
 				),
 				forgivingUnique
 			),

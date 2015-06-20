@@ -27,6 +27,8 @@ export default class extends React.Component {
       <div>
         <h3>{this.props.note.label} {normalizedFreq.qualify().toFixed(2)}
 	        <br/>
+	        {normalizedFreq.numerator}/{normalizedFreq.denominator}
+	        <br/>
 	        ({absoluteFreq.qualify().toFixed(2)})</h3>
         <canvas id={this.state.canvasID}></canvas>
       </div>
