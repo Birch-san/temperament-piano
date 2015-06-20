@@ -5,6 +5,7 @@ export default class Fraction {
 	constructor(numerator:int, denominator:int) {
 		this.numerator = numerator;
 		this.denominator = denominator;
+		this.simplify();
 	}
 
 	multiply(coeff:int) {
@@ -13,20 +14,18 @@ export default class Fraction {
 	}
 
 	multiply(coeff:Fraction) {
-		this.numerator *= coeff.numerator;
-		this.denominator *= coeff.denominator;
-		this.simplify();
-		return this;
+		return new Fraction(
+			this.numerator * coeff.numerator,
+			this.denominator * coeff.denominator
+		);
 	}
 
 	multiply(numerator:int, denominator:int) {
-		let coeff = new Fraction(numerator, denominator);
-		return this.multiply(coeff);
+		return this.multiply(new Fraction(numerator, denominator));
 	}
 
-	divide(coeff:int) {
-		let coeff = new Fraction(numerator, 1);
-		return this.divide(coeff);
+	divide(coeff:int) {;
+		return this.divide(new Fraction(numerator, 1));
 	}
 
 	divide(coeff:Fraction) {
@@ -34,8 +33,7 @@ export default class Fraction {
 	}
 
 	divide(numerator:int, denominator:int) {
-		let coeff = new Fraction(numerator, denominator);
-		return this.divide(coeff);
+		return this.divide(new Fraction(numerator, denominator));
 	}
 
 	reciprocal() {
@@ -48,6 +46,15 @@ export default class Fraction {
 		}(this.numerator, this.denominator);
 		this.numerator /= greatestCommon;
 		this.denominator /= greatestCommon;
+	}
+
+	raise(power:int) {
+		if (power<0) {
+			return this.reciprocal().raise(Math.abs(power));
+		}
+		this.numerator = Math.pow(this.numerator, power);
+		this.denominator = Math.pow(this.denominator, power);
+		return this;
 	}
 
 	qualify() {

@@ -3,6 +3,7 @@ import Key from './key';
 
 //import Trine from 'trine';
 import _ from 'lodash';
+import Fraction from '../classes/Fraction';
 // C2212221
 // A2122122
 // black keys are those which exist in the cycle of fifths,
@@ -29,20 +30,20 @@ export default class extends React.Component {
 
 	//Math.pow(Math.pow(2, 1/12), 7)
 	// https://en.wikipedia.org/wiki/File:Harmonic_series_intervals.png
-	applyInterval(tonic:number, quality:string, times:int = 1) {
+	applyInterval(tonic:Fraction, quality:string, times:int = 1) {
 		let harmonic = ()=> {
 			switch(quality) {
 				case "M3rd":
-					return 5/4;
+					return new Fraction(5, 4);
 				case "4th":
-					return 4/3;
+					return new Fraction(4, 3);
 				case "5th":
-					return 3/2;
+					return new Fraction(3, 2);
 				case "8ve":
 					return 2;
 			}
 		}(quality);
-		return tonic*Math.pow(harmonic, times);
+		return tonic.multiply(harmonic.raise(times));
 	}
 
 	/**
