@@ -284,9 +284,9 @@ export default class extends React.Component {
 		);
 	}
 
-	clickCallback(key) {
+	clickCallback(key, absoluteFreq) {
 		console.log(key);
-		let audioCtx = getAudioContext();
+		let audioCtx = this.getAudioContext();
 		let gainNode = audioCtx.createGain();
 		let oscillator = audioCtx.createOscillator();
 		oscillator.connect(gainNode);
@@ -305,11 +305,12 @@ export default class extends React.Component {
 		return <li key={index}><Octave
 			index={index}
 			octave={octave}
+			octaveStart={this.state.octaveStart}
 			rootFrequency={this.state.rootFrequency}
 			scaleModuloMode={scaleModuloMode}
 			sharpKeys={sharpKeys}
 			flatKeys={flatKeys}
-			clickCallback={this.clickCallback}
+			clickCallback={this.clickCallback.bind(this)}
 			>{octave}</Octave></li>;
 	}
 }

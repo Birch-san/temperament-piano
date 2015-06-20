@@ -29,15 +29,17 @@ export default class extends React.Component {
 	}
 
 	renderItem(item, index) {
-		let absoluteFreq = item.frequency
-			.multiply((new Fraction(2)).raise(this.props.octave))
+		let octavedFrequency = item.frequency
+			.multiply((new Fraction(2)).raise(this.props.octave-this.props.octaveStart));
+		let absoluteFreq = octavedFrequency
 			.multiply(this.props.rootFrequency);
-		let boundClick = this.props.clickCallback
-			.bind(this, item);
+		let boundClick = () => {
+			return this.props.clickCallback(item, absoluteFreq);
+		};
 		return <li key={index}><Key
 			index={index}
 			label={item.label+this.props.octave}
-			normalizedFreq={item.frequency}
+			normalizedFreq={octavedFrequency}
 			absoluteFreq={absoluteFreq}
 			onClick={boundClick}
 			>{item.label}</Key></li>;
