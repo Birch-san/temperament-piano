@@ -29,7 +29,7 @@ export default class extends React.Component {
 			rootFrequency: new Fraction(261626, 1000),
 			accidentals: 5,
 			octaveStart: 4,
-			numOctaves: 1
+			numOctaves: 3
 		};
 	}
 
@@ -195,6 +195,7 @@ export default class extends React.Component {
 		let tonic = new Fraction(1);
 
 		let strategy = "tetrachords";
+		//strategy = "harmonic-stacks";
 
 		let naturalFrequencies = _.sortBy(
 			_.uniq(
@@ -214,7 +215,7 @@ export default class extends React.Component {
 					_.map(
 						strategy === "tetrachords"
 						? this.buildNeighbouringTetrachords(tonic, true, this.state.accidentals, 0)
-						: this.buildNeighbouringHarmonics(tonic, this.state.accidentals, 0),
+						: this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, this.state.accidentals, 0),
 						this.normalizeFraction),
 					naturalFrequencies
 				),
@@ -229,7 +230,7 @@ export default class extends React.Component {
 					_.map(
 						strategy === "tetrachords"
 						? this.buildNeighbouringTetrachords(tonic, true, 0, this.state.accidentals)
-						: this.buildNeighbouringHarmonics(tonic, 0, this.state.accidentals),
+						: this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, 0, this.state.accidentals),
 						this.normalizeFraction),
 					naturalFrequencies
 				),
