@@ -5,8 +5,10 @@ var createjs = require('easeljs');
 export default class extends React.Component {
   constructor(props) {
     super(props);
+	  let normalizedFreq = this.props.note.frequency;
+	  let absoluteFreq = this.props.note.frequency.multiply(this.props.rootFrequency);
     this.state = {
-      canvasID: `${props.note.label}-${props.note.frequency}-canvas`
+      canvasID: `${props.note.label}-${absoluteFreq.qualify()}-canvas`
     };
   }
 
@@ -19,11 +21,13 @@ export default class extends React.Component {
   }
 
   render() {
+	  let normalizedFreq = this.props.note.frequency;
+	  let absoluteFreq = this.props.note.frequency.multiply(this.props.rootFrequency);
     return (
       <div>
-        <h3>{this.props.note.label} {this.props.note.frequency.toFixed(2)}
+        <h3>{this.props.note.label} {normalizedFreq.qualify().toFixed(2)}
 	        <br/>
-	        ({(this.props.rootFrequency*this.props.note.frequency).toFixed(2)})</h3>
+	        ({absoluteFreq.qualify().toFixed(2)})</h3>
         <canvas id={this.state.canvasID}></canvas>
       </div>
     );

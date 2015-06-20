@@ -23,7 +23,7 @@ export default class extends React.Component {
 		super(props);
 		this.state = {
 			scaleMode: "C",
-			rootFrequency: 261.626,
+			rootFrequency: new Fraction(261626, 1000),
 			accidentals: 5
 		};
 	}
@@ -40,7 +40,7 @@ export default class extends React.Component {
 				case "5th":
 					return new Fraction(3, 2);
 				case "8ve":
-					return 2;
+					return new Fraction(2);
 			}
 		}(quality);
 		return tonic.multiply(harmonic.raise(times));
@@ -76,6 +76,11 @@ export default class extends React.Component {
 		return frequency*Math.pow(2, -Math.floor(Math.log2(frequency)));
 	}
 
+	normalizeFraction(frequency:Fraction) {
+		let octaveDelta = -Math.floor(Math.log2(frequency.qualify()));
+		return frequency.multiply(new Fraction(2).raise(octaveDelta));
+	}
+
 	componentDidMount() {
 		// create web audio api context
 		var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -86,7 +91,7 @@ export default class extends React.Component {
 		var oscillator = audioCtx.createOscillator();
 
 		oscillator.type = 'sine';
-		oscillator.frequency.value = this.state.rootFrequency; // value in hertz
+		oscillator.frequency.value = this.state.rootFrequency.qualify(); // value in hertz
 		oscillator.connect(gainNode);
 		oscillator.start();
 
@@ -95,42 +100,55 @@ export default class extends React.Component {
 	}
 
 	render() {
-		function forgivingUnique(n:Fraction) {
+		let forgivingUnique = (n:Fraction) => {
 			return n.qualify().toFixed(5);
-		}
+		};
+
+		let fractionSorter = (fraction:Fraction) => {
+			return fraction.qualify();
+		};
 
 		let tonic = new Fraction(1);
 
-		let naturalFrequencies = _.uniq(
-			_.map(
-				this.buildNeighbouringTetrachords(tonic, true, 1, 1),
-				this.normalize
+		let naturalFrequencies = _.sortBy(
+			_.uniq(
+				_.map(
+					this.buildNeighbouringTetrachords(tonic, true, 1, 1),
+					this.normalizeFraction
+				),
+				forgivingUnique
 			),
-			forgivingUnique
-		).sort();
-		let sharpFrequencies = _.uniq(
-			_.without.apply(
-				null,
-				[
-					_.map(
-					this.buildNeighbouringTetrachords(tonic, true, this.state.accidentals, 0),
-					this.normalize)
-				].concat(naturalFrequencies)
+			fractionSorter
+		);
+		let sharpFrequencies = _.sortBy(
+			_.uniq(
+				_.without.apply(
+					null,
+					[
+						_.map(
+						this.buildNeighbouringTetrachords(tonic, true, this.state.accidentals, 0),
+						this.normalizeFraction)
+					].concat(naturalFrequencies)
+				),
+				forgivingUnique
 			),
-			forgivingUnique
-		).sort();
+			fractionSorter
+		);
 
-		let flatFrequencies = _.uniq(
-			_.without.apply(
-				null,
-				[
-					_.map(
-					this.buildNeighbouringTetrachords(tonic, true, 0, this.state.accidentals),
-					this.normalize)
-				].concat(naturalFrequencies)
+		let flatFrequencies = _.sortBy(
+			_.uniq(
+				_.without.apply(
+					null,
+					[
+						_.map(
+						this.buildNeighbouringTetrachords(tonic, true, 0, this.state.accidentals),
+						this.normalizeFraction)
+					].concat(naturalFrequencies)
+				),
+				forgivingUnique
 			),
-			forgivingUnique
-		).sort();
+			fractionSorter
+		);
 
 		let scaleRoot = "A";
 		let startCharCode = scaleRoot.charCodeAt(0);
@@ -163,7 +181,11 @@ export default class extends React.Component {
 				_.reduce(sharpFrequencies,
 			(accumulator, frequency) => {
 				// for example if I'm after A, my insertion point is A's index + 1
-				let insertionPoint = _.sortedLastIndex(_.pluck(accumulator, 'frequency'), frequency);
+				let insertionPoint = _.sortedLastIndex(
+					_.pluck(accumulator, 'frequency'),
+					frequency,
+					fractionSorter
+				);
 				let indexKeyBelow = insertionPoint-1;
 
 				let relatedKey = accumulator[absmod(indexKeyBelow,accumulator.length)];
@@ -186,7 +208,11 @@ export default class extends React.Component {
 			(accumulator, frequency) => {
 				// for example if I'm after A, my insertion point is A's index + 1
 				// and I am the flat of the guy currently at my insertion point
-				let insertionPoint = _.sortedLastIndex(_.pluck(accumulator, 'frequency'), frequency);
+				let insertionPoint = _.sortedLastIndex(
+					_.pluck(accumulator, 'frequency'),
+					frequency,
+					fractionSorter
+				);
 				let indexKeyAbove = insertionPoint;
 
 				let relatedKey = accumulator[absmod(indexKeyAbove, accumulator.length)];

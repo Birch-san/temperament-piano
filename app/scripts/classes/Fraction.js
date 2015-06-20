@@ -8,31 +8,21 @@ export default class Fraction {
 		this.simplify();
 	}
 
-	multiply(coeff:int) {
-		return this.multiply(new Fraction(coeff));
-	}
-
-	multiply(coeff:Fraction) {
+	multiply(fractionOrNumerator, denominator = 1) {
+		if (!(fractionOrNumerator instanceof Fraction)) {
+			return this.multiply(new Fraction(fractionOrNumerator, denominator));
+		}
 		return new Fraction(
-			this.numerator * coeff.numerator,
-			this.denominator * coeff.denominator
+			this.numerator * fractionOrNumerator.numerator,
+			this.denominator * fractionOrNumerator.denominator
 		);
 	}
 
-	multiply(numerator:int, denominator:int) {
-		return this.multiply(new Fraction(numerator, denominator));
-	}
-
-	divide(coeff:int) {
-		return this.divide(new Fraction(coeff));
-	}
-
-	divide(coeff:Fraction) {
-		return this.multiply(coeff.reciprocal());
-	}
-
-	divide(numerator:int, denominator:int) {
-		return this.divide(new Fraction(numerator, denominator));
+	divide(fractionOrNumerator, denominator = 1) {
+		if (!(fractionOrNumerator instanceof Fraction)) {
+			return this.divide(new Fraction(fractionOrNumerator, denominator));
+		}
+		return this.multiply(fractionOrNumerator.reciprocal());
 	}
 
 	reciprocal() {
@@ -60,4 +50,8 @@ export default class Fraction {
 	qualify() {
 		return this.numerator/this.denominator;
 	}
+
+	//toString() {
+	//	return this.qualify();
+	//}
 }
