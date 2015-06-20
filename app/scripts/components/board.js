@@ -115,9 +115,13 @@ export default class extends React.Component {
 			return fraction.qualify();
 		};
 
-		let withoutFractions = (nominal, exceptions) => {
-			let sortedNominal = _.sortBy(_.clone(nominal), fractionSorter);
-			let sortedExceptions = _.sortBy(_.clone(exceptions), fractionSorter);
+		let noteSorter = (note) => {
+			return note.frequency.qualify();
+		};
+
+		let without = (nominal, exceptions, comparer, sorter) => {
+			let sortedNominal = _.sortBy(_.clone(nominal), sorter);
+			let sortedExceptions = _.sortBy(_.clone(exceptions), sorter);
 
 			let nominalStartLength = sortedNominal.length-1;
 			let exceptionsStartLength = sortedExceptions.length-1;
@@ -128,13 +132,28 @@ export default class extends React.Component {
 				exceptionals:
 				for (let j=exceptionsInsertion; j>=0; j--) {
 					let eFrac = sortedExceptions[j];
-					if (nFrac.equals(eFrac)) {
+					if (comparer(nFrac, eFrac)) {
 						sortedNominal.splice(i, 1);
 						continue nominals;
 					}
 				}
 			}
 			return sortedNominal;
+		};
+
+		let fractionCompare = (fraction1, fraction2) => {
+			return fraction1.equals(fraction2);
+		};
+
+		let withoutFractions = (nominal, exceptions) => {
+			return without(nominal, exceptions, fractionCompare, fractionSorter);
+		};
+
+		let withoutNotes = (nominal, exceptions) => {
+			return without(nominal, exceptions, (note1, note2) => {
+				return fractionCompare(note1.frequency, note2.frequency);
+			},
+			noteSorter);
 		};
 
 		let tonic = new Fraction(1);
@@ -200,9 +219,7 @@ export default class extends React.Component {
 			return ((n % m) + m) % m;
 		}
 
-		let sharpKeys = _.without.apply(
-			null,
-			[
+		let sharpKeys = withoutNotes(
 				_.reduce(sharpFrequencies,
 			(accumulator, frequency) => {
 				// for example if I'm after A, my insertion point is A's index + 1
@@ -222,13 +239,10 @@ export default class extends React.Component {
 				return accumulator;
 			},
 			_.clone(scaleModuloMode)
-		)
-			].concat(scaleModuloMode)
-		);
+				),
+			scaleModuloMode);
 
-		let flatKeys = _.without.apply(
-			null,
-			[
+		let flatKeys = withoutNotes(
 				_.reduceRight(flatFrequencies,
 			(accumulator, frequency) => {
 				// for example if I'm after A, my insertion point is A's index + 1
@@ -249,15 +263,14 @@ export default class extends React.Component {
 				return accumulator;
 			},
 			_.clone(scaleModuloMode)
-		)
-		].concat(scaleModuloMode)
-		);
+				),
+			scaleModuloMode);
 
 		return (
 			<div>
-				<ul>{scaleModuloMode.map(this.renderItem, this)}</ul>
-				<ul>{sharpKeys.map(this.renderItem, this)}</ul>
-				<ul>{flatKeys.map(this.renderItem, this)}</ul>
+					<ul>{scaleModuloMode.map(this.renderItem, this)}</ul>
+					<ul>{sharpKeys.map(this.renderItem, this)}</ul>
+					<ul>{flatKeys.map(this.renderItem, this)}</ul>
 			</div>
 		);
 	}
