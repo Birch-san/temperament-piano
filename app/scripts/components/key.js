@@ -15,7 +15,6 @@ export default class extends React.Component {
     var shape = new createjs.Shape();
 	  let accidentalness = (this.props.label
 		  .match(new RegExp("[♭|♯]", "g")) || []).length;
-	  console.log(accidentalness);
     shape.graphics
 	    .setStrokeStyle(2)
 	    .beginStroke("#000000")

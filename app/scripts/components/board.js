@@ -29,7 +29,7 @@ export default class extends React.Component {
 			rootFrequency: new Fraction(261626, 1000),
 			accidentals: 5,
 			octaveStart: 4,
-			numOctaves: 3
+			numOctaves: 1
 		};
 	}
 
@@ -51,6 +51,11 @@ export default class extends React.Component {
 		return tonic.multiply(harmonic.raise(times));
 	}
 
+	applyIntervalHarmonic(tonic:Fraction, harmonicIx:int, times:int = 1) {
+		let harmonic = new Fraction(harmonicIx, (harmonicIx-1)||1);
+		return tonic.multiply(harmonic.raise(times));
+	}
+
 	/**
 	 * From some identity coefficient returns a tetrachord by
 	 * the specified quality — expressed as an array of
@@ -65,13 +70,29 @@ export default class extends React.Component {
 		];
 	}
 
+	buildHarmonicStack(tonic:Fraction, range:int) {
+		return _.map(_.range(1, range+1),
+			(harmonicIx) => {
+				return this.applyIntervalHarmonic(tonic, harmonicIx);
+			});
+	}
+
 	buildNeighbouringTetrachords(tonic:Fraction, major:boolean, distanceDominant:int, distanceSubdominant:int) {
 		let neighbours = _.range(-distanceSubdominant, distanceDominant+1);
 		let neighbourTetrachords = _.map(neighbours, (neighbourIndex) => {
 			let neighbourTonic = this.applyInterval(tonic, "5th", neighbourIndex);
-			return this.buildTetrachord(neighbourTonic, true, major);
+			return this.buildTetrachord(neighbourTonic, major);
 		})
 		return _.flatten(neighbourTetrachords);
+	}
+
+	buildNeighbouringHarmonics(tonic:Fraction, stackHeight:int, stackSeparation:int, distanceDominant:int, distanceSubdominant:int) {
+		let neighbours = _.range(-distanceSubdominant, distanceDominant+1);
+		let neighbourChords = _.map(neighbours, (neighbourIndex) => {
+			let neighbourTonic = this.applyIntervalHarmonic(tonic, stackSeparation, neighbourIndex);
+			return this.buildHarmonicStack(neighbourTonic, stackHeight);
+		})
+		return _.flatten(neighbourChords);
 	}
 
 	/**
@@ -112,6 +133,16 @@ export default class extends React.Component {
 	}
 
 	render() {
+		let aTonic = new Fraction(1);
+		let stackHeight = 5;
+		let stackSeparation = 3;
+		let rangeDominant = 1;
+		//let rangeSubdominant = rangeDominant;
+		let rangeSubdominant = 1;
+		let stack = this.buildHarmonicStack(aTonic, stackHeight);
+		//console.log(stack);
+		//console.log(this.buildNeighbouringHarmonics(aTonic, 1));
+
 		let forgivingUnique = (n:Fraction) => {
 			return n.qualify();
 		};
@@ -163,10 +194,14 @@ export default class extends React.Component {
 
 		let tonic = new Fraction(1);
 
+		let strategy = "tetrachords";
+
 		let naturalFrequencies = _.sortBy(
 			_.uniq(
 				_.map(
-					this.buildNeighbouringTetrachords(tonic, true, 1, 1),
+					strategy === "tetrachords"
+					? this.buildNeighbouringTetrachords(tonic, true, 1, 1)
+					: this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, rangeDominant, rangeSubdominant),
 					this.normalizeFraction
 				),
 				forgivingUnique
@@ -177,7 +212,9 @@ export default class extends React.Component {
 			_.uniq(
 				withoutFractions(
 					_.map(
-						this.buildNeighbouringTetrachords(tonic, true, this.state.accidentals, 0),
+						strategy === "tetrachords"
+						? this.buildNeighbouringTetrachords(tonic, true, this.state.accidentals, 0)
+						: this.buildNeighbouringHarmonics(tonic, this.state.accidentals, 0),
 						this.normalizeFraction),
 					naturalFrequencies
 				),
@@ -190,7 +227,9 @@ export default class extends React.Component {
 			_.uniq(
 				withoutFractions(
 					_.map(
-						this.buildNeighbouringTetrachords(tonic, true, 0, this.state.accidentals),
+						strategy === "tetrachords"
+						? this.buildNeighbouringTetrachords(tonic, true, 0, this.state.accidentals)
+						: this.buildNeighbouringHarmonics(tonic, 0, this.state.accidentals),
 						this.normalizeFraction),
 					naturalFrequencies
 				),
@@ -291,7 +330,7 @@ export default class extends React.Component {
 		let oscillator = audioCtx.createOscillator();
 		oscillator.connect(gainNode);
 
-		oscillator.type = 'square';
+		oscillator.type = 'sine';
 		oscillator.frequency.value = absoluteFreq.qualify(); // value in hertz
 		oscillator.start();
 		console.log(absoluteFreq.qualify());
