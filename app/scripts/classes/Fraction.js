@@ -2,15 +2,14 @@
  * Created by birch on 20/06/2015.
  */
 export default class Fraction {
-	constructor(numerator:int, denominator:int) {
+	constructor(numerator:int, denominator:int = 1) {
 		this.numerator = numerator;
 		this.denominator = denominator;
 		this.simplify();
 	}
 
 	multiply(coeff:int) {
-		let coeff = new Fraction(numerator, 1);
-		return this.multiply(coeff);
+		return this.multiply(new Fraction(coeff));
 	}
 
 	multiply(coeff:Fraction) {
@@ -24,8 +23,8 @@ export default class Fraction {
 		return this.multiply(new Fraction(numerator, denominator));
 	}
 
-	divide(coeff:int) {;
-		return this.divide(new Fraction(numerator, 1));
+	divide(coeff:int) {
+		return this.divide(new Fraction(coeff));
 	}
 
 	divide(coeff:Fraction) {
@@ -41,9 +40,9 @@ export default class Fraction {
 	}
 
 	simplify(){
-		let greatestCommon = function gcd(a,b){
+		let greatestCommon = (function gcd(a,b){
 			return b ? gcd(b, a%b) : a;
-		}(this.numerator, this.denominator);
+		})(this.numerator, this.denominator);
 		this.numerator /= greatestCommon;
 		this.denominator /= greatestCommon;
 	}
@@ -52,9 +51,10 @@ export default class Fraction {
 		if (power<0) {
 			return this.reciprocal().raise(Math.abs(power));
 		}
-		this.numerator = Math.pow(this.numerator, power);
-		this.denominator = Math.pow(this.denominator, power);
-		return this;
+		return new Fraction(
+			Math.pow(this.numerator, power),
+			Math.pow(this.denominator, power)
+		);
 	}
 
 	qualify() {

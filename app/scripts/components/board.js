@@ -52,7 +52,7 @@ export default class extends React.Component {
 	 * coefficients relative to the base frequency.
 	 * Not normalized to within an octave.
 	 */
-	buildTetrachord(tonic:number, major:boolean) {
+	buildTetrachord(tonic:Fraction, major:boolean) {
 		return [
 			tonic,
 			this.applyInterval(tonic, `${major?'M':'m'}3rd`),
@@ -60,7 +60,7 @@ export default class extends React.Component {
 		];
 	}
 
-	buildNeighbouringTetrachords(tonic:number, major:boolean, distanceDominant:int, distanceSubdominant:int) {
+	buildNeighbouringTetrachords(tonic:Fraction, major:boolean, distanceDominant:int, distanceSubdominant:int) {
 		let neighbours = _.range(-distanceSubdominant, distanceDominant+1);
 		let neighbourTetrachords = _.map(neighbours, (neighbourIndex) => {
 			let neighbourTonic = this.applyInterval(tonic, "5th", neighbourIndex);
@@ -95,13 +95,15 @@ export default class extends React.Component {
 	}
 
 	render() {
-		function forgivingUnique(n) {
-			return n.toFixed(5);
+		function forgivingUnique(n:Fraction) {
+			return n.qualify().toFixed(5);
 		}
+
+		let tonic = new Fraction(1);
 
 		let naturalFrequencies = _.uniq(
 			_.map(
-				this.buildNeighbouringTetrachords(1, true, 1, 1),
+				this.buildNeighbouringTetrachords(tonic, true, 1, 1),
 				this.normalize
 			),
 			forgivingUnique
@@ -111,7 +113,7 @@ export default class extends React.Component {
 				null,
 				[
 					_.map(
-					this.buildNeighbouringTetrachords(1, true, this.state.accidentals, 0),
+					this.buildNeighbouringTetrachords(tonic, true, this.state.accidentals, 0),
 					this.normalize)
 				].concat(naturalFrequencies)
 			),
@@ -123,7 +125,7 @@ export default class extends React.Component {
 				null,
 				[
 					_.map(
-					this.buildNeighbouringTetrachords(1, true, 0, this.state.accidentals),
+					this.buildNeighbouringTetrachords(tonic, true, 0, this.state.accidentals),
 					this.normalize)
 				].concat(naturalFrequencies)
 			),
