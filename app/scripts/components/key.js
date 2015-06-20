@@ -34,11 +34,13 @@ export default class extends React.Component {
     return (
       <div
 	      onClick={this.props.onClick}>
-        <h3>{this.props.label} {this.props.normalizedFreq.qualify().toFixed(2)}
+        <h3>{this.props.label}
+	        </h3>
+	      <p>{this.props.normalizedFreq.qualify().toFixed(2)}
 	        <br/>
 	        {this.props.normalizedFreq.numerator}÷{this.props.normalizedFreq.denominator}
 	        <br/>
-	        {this.props.absoluteFreq.qualify().toFixed(2)}Hz</h3>
+	        {this.props.absoluteFreq.qualify().toFixed(2)}Hz</p>
         <canvas
 	        id={this.state.canvasID}
 
