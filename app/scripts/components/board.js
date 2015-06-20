@@ -81,19 +81,26 @@ export default class extends React.Component {
 		return frequency.multiply(new Fraction(2).raise(octaveDelta));
 	}
 
+	getAudioContext() {
+		if (!this.audioContext) {
+			this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
+		}
+		return this.audioContext;
+	}
+
 	componentDidMount() {
 		// create web audio api context
-		var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+		//var audioCtx = this.getAudioContext();
 
-		var gainNode = audioCtx.createGain();
+		//var gainNode = audioCtx.createGain();
 
 		// create Oscillator node
-		var oscillator = audioCtx.createOscillator();
+		/*var oscillator = audioCtx.createOscillator();
 
 		oscillator.type = 'sine';
 		oscillator.frequency.value = this.state.rootFrequency.qualify(); // value in hertz
 		oscillator.connect(gainNode);
-		oscillator.start();
+		oscillator.start();*/
 
 		//gainNode.connect(audioCtx.destination);
 		//gainNode.disconnect(audioCtx.destination);
@@ -256,6 +263,30 @@ export default class extends React.Component {
 	}
 
 	renderItem(item, index) {
-		return <li key={index}><Key index={index} note={item} rootFrequency={this.state.rootFrequency}>{item.label}</Key></li>;
+		let self = this;
+		let absoluteFreq = item.frequency.multiply(this.state.rootFrequency);
+		let boundClick = (key) => {
+			console.log(key);
+			let audioCtx = self.getAudioContext();
+			let gainNode = audioCtx.createGain();
+			let oscillator = audioCtx.createOscillator();
+			oscillator.connect(gainNode);
+
+			oscillator.type = 'sine';
+			oscillator.frequency.value = absoluteFreq.qualify(); // value in hertz
+			oscillator.start();
+			console.log(absoluteFreq.qualify());
+
+			gainNode.gain.value = 0.2;
+
+			gainNode.connect(audioCtx.destination);
+		}.bind(this, item);
+		return <li key={index}><Key
+			index={index}
+			label={item.label}
+			normalizedFreq={item.frequency}
+			absoluteFreq={absoluteFreq}
+		    onClick={boundClick}
+			>{item.label}</Key></li>;
 	}
 }
