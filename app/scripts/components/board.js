@@ -1,9 +1,12 @@
 import React from 'react';
-import Key from './key';
+import Octave from './octave';
 
 //import Trine from 'trine';
 import _ from 'lodash';
 import Fraction from '../classes/Fraction';
+
+var classNames = require( 'classnames' );
+
 // C2212221
 // A2122122
 // black keys are those which exist in the cycle of fifths,
@@ -24,7 +27,9 @@ export default class extends React.Component {
 		this.state = {
 			scaleMode: "C",
 			rootFrequency: new Fraction(261626, 1000),
-			accidentals: 5
+			accidentals: 5,
+			octaveStart: 4,
+			numOctaves: 3
 		};
 	}
 
@@ -266,40 +271,45 @@ export default class extends React.Component {
 				),
 			scaleModuloMode);
 
+		let octaves = _.range(this.state.octaveStart, this.state.octaveStart+this.state.numOctaves);
+
+		var classes = classNames( {
+			'octaveList': true
+		});
+
 		return (
-			<div>
-					<ul>{scaleModuloMode.map(this.renderItem, this)}</ul>
-					<ul>{sharpKeys.map(this.renderItem, this)}</ul>
-					<ul>{flatKeys.map(this.renderItem, this)}</ul>
-			</div>
+			<ol className={classes}>
+				{octaves.map(this.renderOctave.bind(this, scaleModuloMode, sharpKeys, flatKeys), this)}
+			</ol>
 		);
 	}
 
-	renderItem(item, index) {
-		let self = this;
-		let absoluteFreq = item.frequency.multiply(this.state.rootFrequency);
-		let boundClick = (key) => {
-			console.log(key);
-			let audioCtx = self.getAudioContext();
-			let gainNode = audioCtx.createGain();
-			let oscillator = audioCtx.createOscillator();
-			oscillator.connect(gainNode);
+	clickCallback(key) {
+		console.log(key);
+		let audioCtx = getAudioContext();
+		let gainNode = audioCtx.createGain();
+		let oscillator = audioCtx.createOscillator();
+		oscillator.connect(gainNode);
 
-			oscillator.type = 'sine';
-			oscillator.frequency.value = absoluteFreq.qualify(); // value in hertz
-			oscillator.start();
-			console.log(absoluteFreq.qualify());
+		oscillator.type = 'sine';
+		oscillator.frequency.value = absoluteFreq.qualify(); // value in hertz
+		oscillator.start();
+		console.log(absoluteFreq.qualify());
 
-			gainNode.gain.value = 0.2;
+		gainNode.gain.value = 0.2;
 
-			gainNode.connect(audioCtx.destination);
-		}.bind(this, item);
-		return <li key={index}><Key
+		gainNode.connect(audioCtx.destination);
+	}
+
+	renderOctave(scaleModuloMode, sharpKeys, flatKeys, octave, index) {
+		return <li key={index}><Octave
 			index={index}
-			label={item.label}
-			normalizedFreq={item.frequency}
-			absoluteFreq={absoluteFreq}
-		    onClick={boundClick}
-			>{item.label}</Key></li>;
+			octave={octave}
+			rootFrequency={this.state.rootFrequency}
+			scaleModuloMode={scaleModuloMode}
+			sharpKeys={sharpKeys}
+			flatKeys={flatKeys}
+			clickCallback={this.clickCallback}
+			>{octave}</Octave></li>;
 	}
 }

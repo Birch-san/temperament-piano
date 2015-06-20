@@ -7,8 +7,12 @@ body {
   color: #333;
 }
 
-ul {
-  float:left;
+.octaveList > li {
+  float: left;
+}
+
+.keyListList > li {
+  float: left;
 }
 
 li {
