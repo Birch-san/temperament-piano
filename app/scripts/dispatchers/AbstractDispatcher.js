@@ -15,8 +15,8 @@ export default class {
 
 		promises = callbacks.map((iterand, index) => {
 			return new Promise((resolve, reject) => {
-				resolves[i] = resolve;
-				rejects[i] = reject;
+				resolves[index] = resolve;
+				rejects[index] = reject;
 			});
 		});
 

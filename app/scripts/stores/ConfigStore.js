@@ -18,7 +18,9 @@ function switchStrategy(newStrategy) {
 	config.strategy = newStrategy;
 }
 
-export default class extends EventEmitter {
+let emitter = new EventEmitter();
+
+class ConfigStore {
 	// constructor(...args) {
 	// 	super(args);
 	// }
@@ -28,31 +30,29 @@ export default class extends EventEmitter {
 	}
 
 	static emitChange() {
-		this.emit(CHANGE_EVENT);
+		emitter.emit(CHANGE_EVENT);
 	}
 
 	static addChangeListener(callback) {
-		this.on(CHANGE_EVENT, callback);
+		emitter.on(CHANGE_EVENT, callback);
 	}
 
 	static removeChangeListener(callback) {
-		this.removeListener(CHANGE_EVENT, callback);
-	}
-
-	static dispatcherIndex() {
-		return AppDispatcher.register((payload) => {
-			let action = payload.action;
-			console.log(action);
-
-			switch(action.actionType) {
-				case ConfigConstants.switch:
-					if (switchStrategy(action.strategy) !== false) {
-						this.emitChange();
-					}
-					break;
-			}
-
-			return true; // No errors. Needed by promise in Dispatcher.
-		});
+		emitter.removeListener(CHANGE_EVENT, callback);
 	}
 }
+ConfigStore.dispatcherIndex = AppDispatcher.register((payload) => {
+	let action = payload.action;
+
+	switch(action.actionType) {
+		case ConfigConstants.switchStrategy:
+			if (switchStrategy(action.to) !== false) {
+				ConfigStore.emitChange();
+			}
+			break;
+	}
+
+	return true; // No errors. Needed by promise in Dispatcher.
+});
+
+export default ConfigStore;

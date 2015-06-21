@@ -32,11 +32,11 @@ export default class extends React.Component {
 	}
 
 	componentDidMount() {
-		ConfigStore.addChangeListener(this.onChange);
+		ConfigStore.addChangeListener(this.onChange.bind(this));
 	}
 
 	componentWillUnmount() {
-		ConfigStore.removeChangeListener(this.onChange);
+		ConfigStore.removeChangeListener(this.onChange.bind(this));
 	}
 
 	render() {
