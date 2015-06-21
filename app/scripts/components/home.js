@@ -1,27 +1,20 @@
 import React from 'react';
 import Board from './board';
+import Header from './header';
 
 export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: [
-        'Browserify',
-        'Babel',
-        'Bootstrap',
-        'Modernizr',
-        'Jest'
-      ]
     };
   }
 
   render() {
     return (
-        <Board/>
+	    <div>
+		    <Header/>
+	        <Board/>
+	    </div>
     );
-  }
-
-  renderItem(item, index) {
-    return <li key={index}>{item}</li>;
   }
 }

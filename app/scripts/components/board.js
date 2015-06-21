@@ -30,8 +30,8 @@ export default class extends React.Component {
 			scaleMode: "C",
 			rootFrequency: new Fraction(261626, 1000*2),
 			accidentals: 5,
-			octaveStart: 3,
-			numOctaves: 6
+			octaveStart: 4,
+			numOctaves: 3
 		};
 	}
 
@@ -363,7 +363,8 @@ export default class extends React.Component {
 		let octaves = _.range(this.state.octaveStart, this.state.octaveStart+this.state.numOctaves);
 
 		var classes = classNames( {
-			'octaveList': true
+			'octaveList': true,
+			'board': true
 		});
 
 		return (

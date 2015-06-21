@@ -7,6 +7,20 @@ body {
   color: #333;
 }
 
+.header {
+  position:fixed;
+  height:auto;
+  width:100%;
+  color:#fff;
+  background-color: #666;
+
+  font-family:'Open Sans', sans-serif;
+  font-weight:600;
+  font-size:1.5em;
+
+  padding:10px;
+}
+
 .octaveList > li {
   display:inline-block;
 }
@@ -36,6 +50,10 @@ li {
 canvas {
   width: 100px;
   height: 100px;
+}
+
+.board {
+  padding-top: 100px;
 }
 
 //.hero-unit {
