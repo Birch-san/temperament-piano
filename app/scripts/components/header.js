@@ -4,6 +4,10 @@
 import React from 'react';
 
 import _ from 'lodash';
+var Button = require('react-bootstrap').Button;
+var ButtonGroup = require('react-bootstrap').ButtonGroup;
+var Col = require('react-bootstrap').Col;
+
 var classNames = require( 'classnames' );
 
 export default class extends React.Component {
@@ -15,13 +19,26 @@ export default class extends React.Component {
 
 	render() {
 		var classes = classNames( {
-			'header': true
+			'header': true,
+			'form-horizontal': true
 		});
 
 		return (
-			<div className={classes}>
-			Yo
-			</div>
+			<form className={classes}>
+				<Col md={3} >
+					<ButtonGroup>
+						{this.props.strategies.map(this.renderStrategy, this)}
+					</ButtonGroup>
+				</Col>
+			</form>
+		);
+	}
+
+	renderStrategy(element) {
+		return (
+			<Button key={element}>
+				{element}
+			</Button>
 		);
 	}
 }

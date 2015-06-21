@@ -28,7 +28,7 @@ export default class extends React.Component {
 		super(props);
 		this.state = {
 			scaleMode: "C",
-			rootFrequency: new Fraction(261626, 1000*2),
+			rootFrequency: new Fraction(261626, 1000*1),
 			accidentals: 5,
 			octaveStart: 4,
 			numOctaves: 3
