@@ -19,17 +19,19 @@ var classNames = require( 'classnames' );
 
 // the natural notes in the major scale are the major tetrachords
 // of the tonic, dominant and subdominant!
-// http://arxiv.org/html/1202.4212v1/#sec_3_2_3
+//
+
+// http://www.medieval.org/emfaq/harmony/pyth.html
 
 export default class extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			scaleMode: "C",
-			rootFrequency: new Fraction(261626, 1000),
+			rootFrequency: new Fraction(261626, 1000*2),
 			accidentals: 5,
-			octaveStart: 4,
-			numOctaves: 3
+			octaveStart: 3,
+			numOctaves: 6
 		};
 	}
 
@@ -56,6 +58,11 @@ export default class extends React.Component {
 		return tonic.multiply(harmonic.raise(times));
 	}
 
+	applyHarmonic(tonic:Fraction, harmonicIx:int, times:int = 1) {
+		let harmonic = new Fraction(harmonicIx);
+		return tonic.multiply(harmonic.raise(times));
+	}
+
 	/**
 	 * From some identity coefficient returns a tetrachord by
 	 * the specified quality — expressed as an array of
@@ -70,10 +77,23 @@ export default class extends React.Component {
 		];
 	}
 
-	buildHarmonicStack(tonic:Fraction, range:int) {
+	buildHarmonicIntervalStack(tonic:Fraction, range:int) {
+		// btw need to consider the permutations of harmonics
+		// we get within the stack: if there's a major third and a fifth,
+		// then there is also a minor third for free.
 		return _.map(_.range(1, range+1),
 			(harmonicIx) => {
 				return this.applyIntervalHarmonic(tonic, harmonicIx);
+			});
+	}
+
+	buildHarmonicStack(tonic:Fraction, range:int) {
+		// btw need to consider the permutations of harmonics
+		// we get within the stack: if there's a major third and a fifth,
+		// then there is also a minor third for free.
+		return _.map(_.range(1, range+1),
+			(harmonicIx) => {
+				return this.applyHarmonic(tonic, harmonicIx);
 			});
 	}
 
@@ -89,8 +109,17 @@ export default class extends React.Component {
 	buildNeighbouringHarmonics(tonic:Fraction, stackHeight:int, stackSeparation:int, distanceDominant:int, distanceSubdominant:int) {
 		let neighbours = _.range(-distanceSubdominant, distanceDominant+1);
 		let neighbourChords = _.map(neighbours, (neighbourIndex) => {
-			let neighbourTonic = this.applyIntervalHarmonic(tonic, stackSeparation, neighbourIndex);
+			let neighbourTonic = this.applyHarmonic(tonic, stackSeparation, neighbourIndex);
 			return this.buildHarmonicStack(neighbourTonic, stackHeight);
+		})
+		return _.flatten(neighbourChords);
+	}
+
+	buildNeighbouringIntervalHarmonics(tonic:Fraction, stackHeight:int, stackSeparation:int, distanceDominant:int, distanceSubdominant:int) {
+		let neighbours = _.range(-distanceSubdominant, distanceDominant+1);
+		let neighbourChords = _.map(neighbours, (neighbourIndex) => {
+			let neighbourTonic = this.applyIntervalHarmonic(tonic, stackSeparation, neighbourIndex);
+			return this.buildHarmonicIntervalStack(neighbourTonic, stackHeight);
 		})
 		return _.flatten(neighbourChords);
 	}
@@ -115,21 +144,6 @@ export default class extends React.Component {
 	}
 
 	componentDidMount() {
-		// create web audio api context
-		//var audioCtx = this.getAudioContext();
-
-		//var gainNode = audioCtx.createGain();
-
-		// create Oscillator node
-		/*var oscillator = audioCtx.createOscillator();
-
-		oscillator.type = 'sine';
-		oscillator.frequency.value = this.state.rootFrequency.qualify(); // value in hertz
-		oscillator.connect(gainNode);
-		oscillator.start();*/
-
-		//gainNode.connect(audioCtx.destination);
-		//gainNode.disconnect(audioCtx.destination);
 	}
 
 	render() {
@@ -137,8 +151,8 @@ export default class extends React.Component {
 		let stackHeight = 5;
 		let stackSeparation = 3;
 		let rangeDominant = 1;
-		//let rangeSubdominant = rangeDominant;
-		let rangeSubdominant = 1;
+		let rangeSubdominant = rangeDominant;
+		//let rangeSubdominant = 1;
 		let stack = this.buildHarmonicStack(aTonic, stackHeight);
 		//console.log(stack);
 		//console.log(this.buildNeighbouringHarmonics(aTonic, 1));
@@ -194,15 +208,34 @@ export default class extends React.Component {
 
 		let tonic = new Fraction(1);
 
-		let strategy = "tetrachords";
-		//strategy = "harmonic-stacks";
+		let strategyTetrachords = "tetrachords";
+
+		let strategyNames = {
+			tetrachords:"tetrachords",
+			harmonicStacks: "harmonicStacks",
+			harmonicIntervalStacks: "harmonicIntervalStacks"
+			};
+
+		let strategy = [
+			strategyNames.tetrachords,
+			strategyNames.harmonicStacks,
+			strategyNames.harmonicIntervalStacks
+			][1];
 
 		let naturalFrequencies = _.sortBy(
 			_.uniq(
 				_.map(
-					strategy === "tetrachords"
-					? this.buildNeighbouringTetrachords(tonic, true, 1, 1)
-					: this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, rangeDominant, rangeSubdominant),
+					() => {
+						switch(strategy) {
+							case strategyNames.harmonicIntervalStacks:
+								return this.buildNeighbouringIntervalHarmonics(tonic, stackHeight, stackSeparation, rangeDominant, rangeSubdominant);
+							case strategyNames.harmonicStacks:
+								return this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, rangeDominant, rangeSubdominant);
+							case strategyNames.tetrachords:
+							default:
+								return this.buildNeighbouringTetrachords(tonic, true, 1, 1);
+						}
+					}(),
 					this.normalizeFraction
 				),
 				forgivingUnique
@@ -213,9 +246,17 @@ export default class extends React.Component {
 			_.uniq(
 				withoutFractions(
 					_.map(
-						strategy === "tetrachords"
-						? this.buildNeighbouringTetrachords(tonic, true, this.state.accidentals, 0)
-						: this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, this.state.accidentals, 0),
+						() => {
+							switch(strategy) {
+								case strategyNames.harmonicIntervalStacks:
+									return this.buildNeighbouringIntervalHarmonics(tonic, stackHeight, stackSeparation, this.state.accidentals, 0);
+								case strategyNames.harmonicStacks:
+									return this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, this.state.accidentals, 0);
+								case strategyNames.tetrachords:
+								default:
+									return this.buildNeighbouringTetrachords(tonic, true, this.state.accidentals, 0);
+							}
+						}(),
 						this.normalizeFraction),
 					naturalFrequencies
 				),
@@ -228,9 +269,17 @@ export default class extends React.Component {
 			_.uniq(
 				withoutFractions(
 					_.map(
-						strategy === "tetrachords"
-						? this.buildNeighbouringTetrachords(tonic, true, 0, this.state.accidentals)
-						: this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, 0, this.state.accidentals),
+						() => {
+							switch(strategy) {
+								case strategyNames.harmonicIntervalStacks:
+									return this.buildNeighbouringIntervalHarmonics(tonic, stackHeight, stackSeparation, 0, this.state.accidentals);
+								case strategyNames.harmonicStacks:
+									return this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, 0, this.state.accidentals);
+								case strategyNames.tetrachords:
+								default:
+									return this.buildNeighbouringTetrachords(tonic, true, 0, this.state.accidentals);
+							}
+						}(),
 						this.normalizeFraction),
 					naturalFrequencies
 				),
