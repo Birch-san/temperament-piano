@@ -1,5 +1,5 @@
 export default class {
-	static get switch() {
+	static get switchStrategy() {
 		return 'switch';
 	}
 

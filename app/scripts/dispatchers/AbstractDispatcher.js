@@ -1,28 +1,26 @@
 var Promise = require('bluebird');
 
+let callbacks = [];
+let promises = [];
+
 export default class {
-	constructor() {
-		this.callbacks = [];
-		this.promises = [];
+	static register(callback) {
+		callbacks.push(callback);
+		return callbacks.length-1;
 	}
 
-	register(callback) {
-		this.callbacks.push(callback);
-		return this.callbacks.length-1;
-	}
-
-	dispatch(payload) {
+	static dispatch(payload) {
 		let resolves = [];
 		let rejects = [];
 
-		this.promises = this.callbacks.map((iterand, index) => {
+		promises = callbacks.map((iterand, index) => {
 			return new Promise((resolve, reject) => {
 				resolves[i] = resolve;
 				rejects[i] = reject;
 			});
 		});
 
-		this.callbacks.forEach((callback, index) => {
+		callbacks.forEach((callback, index) => {
 			Promise.resolve(callback(payload))
 			.then(()=> {
 				resolves[index](payload);
@@ -32,6 +30,6 @@ export default class {
 			});
 		});
 
-		this.promises = [];
+		promises = [];
 	}
 }

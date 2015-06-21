@@ -1,7 +1,7 @@
 var EventEmitter = require('events').EventEmitter;
 
-import ConfigConstants from '../constants/Config';
-import AppDispatcher from '../dispatchers/App';
+import ConfigConstants from '../constants/ConfigConstants';
+import AppDispatcher from '../dispatchers/AppDispatcher';
 
 var _ = require('lodash');
 
@@ -18,32 +18,31 @@ function switchStrategy(newStrategy) {
 	config.strategy = newStrategy;
 }
 
-// console.log(EventEmitter.prototype);
-
 export default class extends EventEmitter {
 	// constructor(...args) {
 	// 	super(args);
 	// }
 
-	getConfig() {
+	static getConfig() {
 		return config;
 	}
 
-	emitChange() {
-		super.emit(CHANGE_EVENT);
+	static emitChange() {
+		this.emit(CHANGE_EVENT);
 	}
 
-	addChangeListener(callback) {
-		super.on(CHANGE_EVENT, callback);
+	static addChangeListener(callback) {
+		this.on(CHANGE_EVENT, callback);
 	}
 
-	removeChangeListener(callback) {
-		super.removeListener(CHANGE_EVENT, callback);
+	static removeChangeListener(callback) {
+		this.removeListener(CHANGE_EVENT, callback);
 	}
 
-	dispatcherIndex() {
+	static dispatcherIndex() {
 		return AppDispatcher.register((payload) => {
 			let action = payload.action;
+			console.log(action);
 
 			switch(action.actionType) {
 				case ConfigConstants.switch:
