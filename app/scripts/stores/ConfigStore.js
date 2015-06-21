@@ -18,27 +18,32 @@ function switchStrategy(newStrategy) {
 	config.strategy = newStrategy;
 }
 
+// console.log(EventEmitter.prototype);
+
 export default class extends EventEmitter {
+	// constructor(...args) {
+	// 	super(args);
+	// }
+
 	getConfig() {
 		return config;
 	}
 
 	emitChange() {
-		this.emit(CHANGE_EVENT);
+		super.emit(CHANGE_EVENT);
 	}
 
 	addChangeListener(callback) {
-		this.on(CHANGE_EVENT, callback);
+		super.on(CHANGE_EVENT, callback);
 	}
 
 	removeChangeListener(callback) {
-		this.removeListener(CHANGE_EVENT, callback);
+		super.removeListener(CHANGE_EVENT, callback);
 	}
 
-	dispatcherIndex(payload) {
-		AppDispatcher.register((payload) => {
-			var action = payload.action;
-			var text;
+	dispatcherIndex() {
+		return AppDispatcher.register((payload) => {
+			let action = payload.action;
 
 			switch(action.actionType) {
 				case ConfigConstants.switch:
