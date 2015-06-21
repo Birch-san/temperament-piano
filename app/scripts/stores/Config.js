@@ -1,7 +1,7 @@
 var EventEmitter = require('events').EventEmitter;
 
-import ConfigConstants from '../constants/ConfigConstants';
-import AppDispatcher from '../dispatchers/AppDispatcher';
+import ConfigConstants from '../constants/Config';
+import AppDispatcher from '../dispatchers/App';
 
 var _ = require('lodash');
 

@@ -1,6 +1,6 @@
-import Dispatcher from './Dispatcher';
+import Abstract from './Abstract';
 
-export default class extends Dispatcher {
+export default class extends Abstract {
 	handleViewAction(action) {
 		this.dispatch({
 			source: 'VIEW_ACTION',

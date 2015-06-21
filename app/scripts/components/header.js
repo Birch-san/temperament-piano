@@ -3,8 +3,8 @@
  */
  import React from 'react';
  import _ from 'lodash';
- import ConfigStore from '../stores/ConfigStore';
- import ConfigConstants from '../constants/ConfigConstants';
+ import ConfigStore from '../stores/Config';
+ import ConfigConstants from '../constants/Config';
 
  const bootstrap = require('react-bootstrap');
  const Button = bootstrap.Button;
@@ -62,9 +62,16 @@
 
  	renderStrategy(element) {
  		return (
- 			<Button key={element}>
+ 			<Button key={element} onClick={this.changeStrategy.bind(this, element)}>
  			{element}
  			</Button>
  			);
+ 	}
+
+ 	changeStrategy(element, event) {
+ 		event.preventDefault();
+ 		event.stopPropagation();
+
+ 		// store.
  	}
  }
