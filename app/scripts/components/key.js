@@ -3,15 +3,19 @@ import React from 'react';
 var createjs = require('easeljs');
 
 export default class extends React.Component {
+  static makeID(props) {
+    return `${props.label}-${props.absoluteFreq.qualify()}-canvas`;
+  }
+
   constructor(props) {
     super(props);
     this.state = {
-      canvasID: `${props.label}-${props.absoluteFreq.qualify()}-canvas`
     };
   }
 
   componentDidMount() {
-    var stage = new createjs.Stage(this.state.canvasID);
+    let canvasID = this.constructor.makeID(this.props);
+    var stage = new createjs.Stage(canvasID);
     var shape = new createjs.Shape();
 	  let accidentalness = (this.props.label
 		  .match(new RegExp("[♭|♯]", "g")) || []).length;
@@ -30,6 +34,7 @@ export default class extends React.Component {
   }
 
   render() {
+    let canvasID = this.constructor.makeID(this.props);
     return (
       <div
 	      onClick={this.props.onClick}>
@@ -41,7 +46,7 @@ export default class extends React.Component {
 	        <br/>
 	        {this.props.absoluteFreq.qualify().toFixed(2)}Hz</p>
         <canvas
-	        id={this.state.canvasID}
+	        id={canvasID}
 
 	        ></canvas>
       </div>
