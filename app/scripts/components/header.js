@@ -122,7 +122,7 @@ export default class extends React.Component {
 							'input-group': true
 							})}>
 								<InputNum
-								min={1} max={15} step={1}
+								min={1} max={25} step={1}
 								className={classNames({
 								'form-control': true,
 								'input': true
