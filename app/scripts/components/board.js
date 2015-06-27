@@ -30,19 +30,12 @@ const classNames = require( 'classnames' );
 export default class extends React.Component {
 	static initState() {
 		let config = ConfigStore.getConfig();
-		return {
-			strategy: config.strategy
-		};
+		return config;
 	}
 
 	constructor(props) {
 		super(props);
 		this.state = _.extend(this.constructor.initState(), {
-			scaleMode: "C",
-			rootFrequency: new Fraction(261626, 1000*1),
-			accidentals: 5,
-			octaveStart: 4,
-			numOctaves: 3
 		});
 	}
 
@@ -167,16 +160,6 @@ export default class extends React.Component {
 	}
 
 	render() {
-		let aTonic = new Fraction(1);
-		let stackHeight = 5;
-		let stackSeparation = 3;
-		let rangeDominant = 1;
-		let rangeSubdominant = rangeDominant;
-		//let rangeSubdominant = 1;
-		// let stack = this.buildHarmonicStack(aTonic, stackHeight);
-		//console.log(stack);
-		//console.log(this.buildNeighbouringHarmonics(aTonic, 1));
-
 		let forgivingUnique = (n:Fraction) => {
 			return n.qualify();
 		};
@@ -235,12 +218,12 @@ export default class extends React.Component {
 					() => {
 						switch(strategy) {
 							case Symbol.for("harmonicIntervalStacks"):
-								return this.buildNeighbouringIntervalHarmonics(tonic, stackHeight, stackSeparation, rangeDominant, rangeSubdominant);
+								return this.buildNeighbouringIntervalHarmonics(tonic, this.state.stackHeight, this.state.stackNeighbourSeparation, this.state.stacksDominant, this.state.stacksSubdominant);
 							case Symbol.for("harmonicStacks"):
-								return this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, rangeDominant, rangeSubdominant);
+								return this.buildNeighbouringHarmonics(tonic, this.state.stackHeight, this.state.stackNeighbourSeparation, this.state.stacksDominant, this.state.stacksSubdominant);
 							case Symbol.for("tetrachords"):
 							default:
-								return this.buildNeighbouringTetrachords(tonic, true, 1, 1);
+								return this.buildNeighbouringTetrachords(tonic, true, this.state.stacksDominant, this.state.stacksSubdominant);
 						}
 					}(),
 					this.normalizeFraction
@@ -249,7 +232,7 @@ export default class extends React.Component {
 			),
 			fractionSorter
 		);
-		
+
 		let sharpFrequencies = _.sortBy(
 			_.uniq(
 				withoutFractions(
@@ -257,12 +240,12 @@ export default class extends React.Component {
 						() => {
 							switch(strategy) {
 								case Symbol.for("harmonicIntervalStacks"):
-									return this.buildNeighbouringIntervalHarmonics(tonic, stackHeight, stackSeparation, this.state.accidentals, 0);
+									return this.buildNeighbouringIntervalHarmonics(tonic, this.state.stackHeight, this.state.stackNeighbourSeparation, this.state.stacksNeighbouringNaturals, 0);
 								case Symbol.for("harmonicStacks"):
-									return this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, this.state.accidentals, 0);
+									return this.buildNeighbouringHarmonics(tonic, this.state.stackHeight, this.state.stackNeighbourSeparation, this.state.stacksNeighbouringNaturals, 0);
 								case Symbol.for("tetrachords"):
 								default:
-									return this.buildNeighbouringTetrachords(tonic, true, this.state.accidentals, 0);
+									return this.buildNeighbouringTetrachords(tonic, true, this.state.stacksNeighbouringNaturals, 0);
 							}
 						}(),
 						this.normalizeFraction),
@@ -280,12 +263,12 @@ export default class extends React.Component {
 						() => {
 							switch(strategy) {
 								case Symbol.for("harmonicIntervalStacks"):
-									return this.buildNeighbouringIntervalHarmonics(tonic, stackHeight, stackSeparation, 0, this.state.accidentals);
+									return this.buildNeighbouringIntervalHarmonics(tonic, this.state.stackHeight, this.state.stackNeighbourSeparation, 0, this.state.stacksNeighbouringNaturals);
 								case Symbol.for("harmonicStacks"):
-									return this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, 0, this.state.accidentals);
+									return this.buildNeighbouringHarmonics(tonic, this.state.stackHeight, this.state.stackNeighbourSeparation, 0, this.state.stacksNeighbouringNaturals);
 								case Symbol.for("tetrachords"):
 								default:
-									return this.buildNeighbouringTetrachords(tonic, true, 0, this.state.accidentals);
+									return this.buildNeighbouringTetrachords(tonic, true, 0, this.state.stacksNeighbouringNaturals);
 							}
 						}(),
 						this.normalizeFraction),

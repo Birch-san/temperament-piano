@@ -1,5 +1,6 @@
 var EventEmitter = require('events').EventEmitter;
 
+import Fraction from '../classes/Fraction';
 import ConfigConstants from '../constants/ConfigConstants';
 import AppDispatcher from '../dispatchers/AppDispatcher';
 
@@ -8,8 +9,19 @@ const _ = require('lodash');
 let CHANGE_EVENT = 'change';
 
 let config = {
-	strategy: Symbol.for("harmonicStacks")
+	strategy: Symbol.for("harmonicStacks"),
+	stackHeight: 5,
+	stackNeighbourSeparation: 3,
+	stacksDominant: 1,
+	octaveStart: 4,
+	numOctaves: 3,
+	stacksNeighbouringNaturals: 5,
+	scaleMode: "C",
+	rootFrequency: new Fraction(261626, 1000*1)
 };
+_.extend(config, {
+	stacksSubdominant: config.stacksDominant
+});
 
 function switchStrategy(newStrategy) {
 	if (config.strategy === newStrategy) {
