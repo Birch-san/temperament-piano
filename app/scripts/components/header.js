@@ -49,8 +49,8 @@ export default class extends React.Component {
 			<form className={classNames({
 					'header': true,
 					'form-horizontal': false
-				})}>			
-				<Col xs={4} className={classNames({
+				})}>
+				<Col xs={8} lg={4} className={classNames({
 					'form-group': true
 				})}>
 					<Col xs={12}>
@@ -64,10 +64,10 @@ export default class extends React.Component {
 						</div>
 					</Col>
 				</Col>
-				<Col xs={3} className={classNames({
+				<Col xs={4} lg={3} className={classNames({
 					'form-group': true
 				})}>
-					<Col xs={6} className={classNames({
+					<Col lg={6} className={classNames({
 					})}>
 						<Label className={classNames({
 						// 'input-group-addon': true
@@ -86,7 +86,7 @@ export default class extends React.Component {
 							/>
 						</div>
 					</Col>
-					<Col xs={6} className={classNames({
+					<Col lg={6} className={classNames({
 					})}>
 						<Label className={classNames({
 						// 'input-group-addon': true
@@ -106,52 +106,59 @@ export default class extends React.Component {
 						</div>
 					</Col>
 				</Col>
-				<Col xs={3} className={classNames({
+				{
+					this.state.strategy===Symbol.for("tetrachords")
+				? null
+				: 
+					<Col xs={4} lg={3} className={classNames({
+					'form-group': true
+					})}>
+						<Col lg={6} className={classNames({
+						})}>
+							<Label className={classNames({
+							// 'input-group-addon': true
+							})}>Harmonics</Label>
+							<div className={classNames({
+							'input-group': true
+							})}>
+								<InputNum
+								min={1} max={15} step={1}
+								className={classNames({
+								'form-control': true,
+								'input': true
+								})}
+								value={this.state.stackHeight}
+								onChange={this.handleChange.bind(this, 'stackHeight')}
+								/>
+							</div>
+						</Col>
+						<Col lg={6} className={classNames({
+						})}>
+							<Label className={classNames({
+							// 'input-group-addon': true
+							})}>Join Arpeggios on Harmonic</Label>
+							<div className={classNames({
+							'input-group': true
+							})}>
+								<InputNum
+								min={1} max={10} step={1}
+								className={classNames({
+								'form-control': true,
+								'input': true
+								})}
+								value={this.state.stackNeighbourSeparation}
+								onChange={this.handleChange.bind(this, 'stackNeighbourSeparation')}
+								/>
+							</div>
+						</Col>
+					</Col>
+					
+				}
+				
+				<Col xs={4} lg={3} className={classNames({
 					'form-group': true
 				})}>
-					<Col xs={6} className={classNames({
-					})}>
-						<Label className={classNames({
-						// 'input-group-addon': true
-						})}>Harmonics</Label>
-						<div className={classNames({
-						'input-group': true
-						})}>
-							<InputNum
-							min={1} max={15} step={1}
-							className={classNames({
-							'form-control': true,
-							'input': true
-							})}
-							value={this.state.stackHeight}
-							onChange={this.handleChange.bind(this, 'stackHeight')}
-							/>
-						</div>
-					</Col>
-					<Col xs={6} className={classNames({
-					})}>
-						<Label className={classNames({
-						// 'input-group-addon': true
-						})}>Join Arpeggios on Harmonic</Label>
-						<div className={classNames({
-						'input-group': true
-						})}>
-							<InputNum
-							min={1} max={10} step={1}
-							className={classNames({
-							'form-control': true,
-							'input': true
-							})}
-							value={this.state.stackNeighbourSeparation}
-							onChange={this.handleChange.bind(this, 'stackNeighbourSeparation')}
-							/>
-						</div>
-					</Col>
-				</Col>
-				<Col xs={3} className={classNames({
-					'form-group': true
-				})}>
-					<Col xs={12} className={classNames({
+					<Col lg={12} className={classNames({
 					})}>
 						<Label className={classNames({
 						// 'input-group-addon': true
@@ -171,10 +178,10 @@ export default class extends React.Component {
 						</div>
 					</Col>
 				</Col>
-				<Col xs={3} className={classNames({
+				<Col xs={4} lg={3} className={classNames({
 					'form-group': true
 				})}>
-					<Col xs={6} className={classNames({
+					<Col lg={6} className={classNames({
 					})}>
 						<Label className={classNames({
 						// 'input-group-addon': true
@@ -183,7 +190,7 @@ export default class extends React.Component {
 						'input-group': true
 						})}>
 							<InputNum
-							min={1} max={15} step={1}
+							min={0} max={15} step={1}
 							className={classNames({
 							'form-control': true,
 							'input': true
@@ -193,7 +200,7 @@ export default class extends React.Component {
 							/>
 						</div>
 					</Col>
-					<Col xs={6} className={classNames({
+					<Col lg={6} className={classNames({
 					})}>
 						<Label className={classNames({
 						// 'input-group-addon': true
@@ -202,7 +209,7 @@ export default class extends React.Component {
 						'input-group': true
 						})}>
 							<InputNum
-							min={1} max={15} step={1}
+							min={0} max={15} step={1}
 							className={classNames({
 							'form-control': true,
 							'input': true
