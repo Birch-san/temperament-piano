@@ -49,36 +49,168 @@ export default class extends React.Component {
 			<form className={classNames({
 					'header': true,
 					'form-horizontal': false
-				})}>
-			
-				<Col xs={4}>
-				<Label>Generator</Label>
-				<div className={classNames({
-					'input-group': true
-				})}>
-					<ButtonGroup>
-					{Object.getOwnPropertySymbols(ConfigConstants.strategies).map(this.renderStrategy, this)}
-					</ButtonGroup>
-					</div>
-				</Col>
+				})}>			
 				<Col xs={4} className={classNames({
 					'form-group': true
 				})}>
-					<Label className={classNames({
-						// 'input-group-addon': true
-						})}>Octave</Label>
-					<Col xs={3} className={classNames({
-					'input-group': true
+					<Col xs={12}>
+						<Label>Generator</Label>
+						<div className={classNames({
+							'input-group': true
+						})}>
+							<ButtonGroup>
+							{Object.getOwnPropertySymbols(ConfigConstants.strategies).map(this.renderStrategy, this)}
+							</ButtonGroup>
+						</div>
+					</Col>
+				</Col>
+				<Col xs={3} className={classNames({
+					'form-group': true
+				})}>
+					<Col xs={6} className={classNames({
 					})}>
-						<InputNum
-						min={1} max={10} step={1}
-						className={classNames({
-						'form-control': true,
-						'input': true
-						})}
-						value={this.state.octaveStart}
-						onChange={this.handleChange.bind(this, 'octaveStart')}
-						/>
+						<Label className={classNames({
+						// 'input-group-addon': true
+						})}>Octave Start</Label>
+						<div className={classNames({
+						'input-group': true
+						})}>
+							<InputNum
+							min={1} max={10} step={1}
+							className={classNames({
+							'form-control': true,
+							'input': true
+							})}
+							value={this.state.octaveStart}
+							onChange={this.handleChange.bind(this, 'octaveStart')}
+							/>
+						</div>
+					</Col>
+					<Col xs={6} className={classNames({
+					})}>
+						<Label className={classNames({
+						// 'input-group-addon': true
+						})}>Octaves</Label>
+						<div className={classNames({
+						'input-group': true
+						})}>
+							<InputNum
+							min={1} max={10} step={1}
+							className={classNames({
+							'form-control': true,
+							'input': true
+							})}
+							value={this.state.numOctaves}
+							onChange={this.handleChange.bind(this, 'numOctaves')}
+							/>
+						</div>
+					</Col>
+				</Col>
+				<Col xs={3} className={classNames({
+					'form-group': true
+				})}>
+					<Col xs={6} className={classNames({
+					})}>
+						<Label className={classNames({
+						// 'input-group-addon': true
+						})}>Harmonics</Label>
+						<div className={classNames({
+						'input-group': true
+						})}>
+							<InputNum
+							min={1} max={15} step={1}
+							className={classNames({
+							'form-control': true,
+							'input': true
+							})}
+							value={this.state.stackHeight}
+							onChange={this.handleChange.bind(this, 'stackHeight')}
+							/>
+						</div>
+					</Col>
+					<Col xs={6} className={classNames({
+					})}>
+						<Label className={classNames({
+						// 'input-group-addon': true
+						})}>Join Arpeggios on Harmonic</Label>
+						<div className={classNames({
+						'input-group': true
+						})}>
+							<InputNum
+							min={1} max={10} step={1}
+							className={classNames({
+							'form-control': true,
+							'input': true
+							})}
+							value={this.state.stackNeighbourSeparation}
+							onChange={this.handleChange.bind(this, 'stackNeighbourSeparation')}
+							/>
+						</div>
+					</Col>
+				</Col>
+				<Col xs={3} className={classNames({
+					'form-group': true
+				})}>
+					<Col xs={12} className={classNames({
+					})}>
+						<Label className={classNames({
+						// 'input-group-addon': true
+						})}>Arpeggios Generating Accidentals</Label>
+						<div className={classNames({
+						'input-group': true
+						})}>
+							<InputNum
+							min={1} max={15} step={1}
+							className={classNames({
+							'form-control': true,
+							'input': true
+							})}
+							value={this.state.stacksNeighbouringNaturals}
+							onChange={this.handleChange.bind(this, 'stacksNeighbouringNaturals')}
+							/>
+						</div>
+					</Col>
+				</Col>
+				<Col xs={3} className={classNames({
+					'form-group': true
+				})}>
+					<Col xs={6} className={classNames({
+					})}>
+						<Label className={classNames({
+						// 'input-group-addon': true
+						})}>Dominant Arpeggios</Label>
+						<div className={classNames({
+						'input-group': true
+						})}>
+							<InputNum
+							min={1} max={15} step={1}
+							className={classNames({
+							'form-control': true,
+							'input': true
+							})}
+							value={this.state.stacksDominant}
+							onChange={this.handleChange.bind(this, 'stacksDominant')}
+							/>
+						</div>
+					</Col>
+					<Col xs={6} className={classNames({
+					})}>
+						<Label className={classNames({
+						// 'input-group-addon': true
+						})}>Subdominant Arpeggios</Label>
+						<div className={classNames({
+						'input-group': true
+						})}>
+							<InputNum
+							min={1} max={15} step={1}
+							className={classNames({
+							'form-control': true,
+							'input': true
+							})}
+							value={this.state.stacksSubdominant}
+							onChange={this.handleChange.bind(this, 'stacksSubdominant')}
+							/>
+						</div>
 					</Col>
 				</Col>
 			</form>
