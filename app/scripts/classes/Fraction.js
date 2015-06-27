@@ -60,6 +60,10 @@ export default class Fraction {
 		return this.qualify() > frac.qualify();
 	}
 
+	// get [Symbol.toStringTag]() {
+	//    return `${this.numerator}÷${this.denominator}`;
+	// }
+
 	//toString() {
 	//	return this.qualify();
 	//}

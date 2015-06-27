@@ -5,7 +5,11 @@ import Octave from './octave';
 import _ from 'lodash';
 import Fraction from '../classes/Fraction';
 
-var classNames = require( 'classnames' );
+import ConfigStore from '../stores/ConfigStore';
+import ConfigConstants from '../constants/ConfigConstants';
+import ConfigActions from '../actions/ConfigActions';
+
+const classNames = require( 'classnames' );
 
 // C2212221
 // A2122122
@@ -24,15 +28,22 @@ var classNames = require( 'classnames' );
 // http://www.medieval.org/emfaq/harmony/pyth.html
 
 export default class extends React.Component {
+	static initState() {
+		let config = ConfigStore.getConfig();
+		return {
+			strategy: config.strategy
+		};
+	}
+
 	constructor(props) {
 		super(props);
-		this.state = {
+		this.state = _.extend(this.constructor.initState(), {
 			scaleMode: "C",
 			rootFrequency: new Fraction(261626, 1000*1),
 			accidentals: 5,
 			octaveStart: 4,
 			numOctaves: 3
-		};
+		});
 	}
 
 	//Math.pow(Math.pow(2, 1/12), 7)
@@ -143,7 +154,16 @@ export default class extends React.Component {
 		return this.audioContext;
 	}
 
+	onChange() {
+		this.setState(this.constructor.initState());
+	}
+
 	componentDidMount() {
+		ConfigStore.addChangeListener(this.onChange.bind(this));
+	}
+
+	componentWillUnmount() {
+		ConfigStore.removeChangeListener(this.onChange.bind(this));
 	}
 
 	render() {
@@ -153,7 +173,7 @@ export default class extends React.Component {
 		let rangeDominant = 1;
 		let rangeSubdominant = rangeDominant;
 		//let rangeSubdominant = 1;
-		let stack = this.buildHarmonicStack(aTonic, stackHeight);
+		// let stack = this.buildHarmonicStack(aTonic, stackHeight);
 		//console.log(stack);
 		//console.log(this.buildNeighbouringHarmonics(aTonic, 1));
 
@@ -207,31 +227,18 @@ export default class extends React.Component {
 		};
 
 		let tonic = new Fraction(1);
-
-		let strategyTetrachords = "tetrachords";
-
-		let strategyNames = {
-			tetrachords:"tetrachords",
-			harmonicStacks: "harmonicStacks",
-			harmonicIntervalStacks: "harmonicIntervalStacks"
-			};
-
-		let strategy = [
-			strategyNames.tetrachords,
-			strategyNames.harmonicStacks,
-			strategyNames.harmonicIntervalStacks
-			][1];
+		let strategy = this.state.strategy;
 
 		let naturalFrequencies = _.sortBy(
 			_.uniq(
 				_.map(
 					() => {
 						switch(strategy) {
-							case strategyNames.harmonicIntervalStacks:
+							case Symbol.for("harmonicIntervalStacks"):
 								return this.buildNeighbouringIntervalHarmonics(tonic, stackHeight, stackSeparation, rangeDominant, rangeSubdominant);
-							case strategyNames.harmonicStacks:
+							case Symbol.for("harmonicStacks"):
 								return this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, rangeDominant, rangeSubdominant);
-							case strategyNames.tetrachords:
+							case Symbol.for("tetrachords"):
 							default:
 								return this.buildNeighbouringTetrachords(tonic, true, 1, 1);
 						}
@@ -242,17 +249,18 @@ export default class extends React.Component {
 			),
 			fractionSorter
 		);
+		
 		let sharpFrequencies = _.sortBy(
 			_.uniq(
 				withoutFractions(
 					_.map(
 						() => {
 							switch(strategy) {
-								case strategyNames.harmonicIntervalStacks:
+								case Symbol.for("harmonicIntervalStacks"):
 									return this.buildNeighbouringIntervalHarmonics(tonic, stackHeight, stackSeparation, this.state.accidentals, 0);
-								case strategyNames.harmonicStacks:
+								case Symbol.for("harmonicStacks"):
 									return this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, this.state.accidentals, 0);
-								case strategyNames.tetrachords:
+								case Symbol.for("tetrachords"):
 								default:
 									return this.buildNeighbouringTetrachords(tonic, true, this.state.accidentals, 0);
 							}
@@ -271,11 +279,11 @@ export default class extends React.Component {
 					_.map(
 						() => {
 							switch(strategy) {
-								case strategyNames.harmonicIntervalStacks:
+								case Symbol.for("harmonicIntervalStacks"):
 									return this.buildNeighbouringIntervalHarmonics(tonic, stackHeight, stackSeparation, 0, this.state.accidentals);
-								case strategyNames.harmonicStacks:
+								case Symbol.for("harmonicStacks"):
 									return this.buildNeighbouringHarmonics(tonic, stackHeight, stackSeparation, 0, this.state.accidentals);
-								case strategyNames.tetrachords:
+								case Symbol.for("tetrachords"):
 								default:
 									return this.buildNeighbouringTetrachords(tonic, true, 0, this.state.accidentals);
 							}

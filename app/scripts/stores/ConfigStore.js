@@ -3,12 +3,12 @@ var EventEmitter = require('events').EventEmitter;
 import ConfigConstants from '../constants/ConfigConstants';
 import AppDispatcher from '../dispatchers/AppDispatcher';
 
-var _ = require('lodash');
+const _ = require('lodash');
 
 let CHANGE_EVENT = 'change';
 
 let config = {
-	strategy: ConfigConstants.strategyNames.harmonicStacks
+	strategy: Symbol.for("harmonicStacks")
 };
 
 function switchStrategy(newStrategy) {

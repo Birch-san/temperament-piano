@@ -11,6 +11,7 @@ const bootstrap = require('react-bootstrap');
 const Button = bootstrap.Button;
 const ButtonGroup = bootstrap.ButtonGroup;
 const Col = bootstrap.Col;
+const Label = bootstrap.Label;
 
 const classNames = require('classnames');
 
@@ -42,33 +43,43 @@ export default class extends React.Component {
 	render() {
 		let classes = classNames( {
 			'header': true,
-			'form-horizontal': true
+			'form-horizontal': false
 		});
+
+		let stateStrategyObj = ConfigConstants.strategies[this.state.strategy];
 
 		return (
 			<form className={classes}>
-			{this.state.strategy}
-			<Col md={3} >
+			<Col xs={6} >
+			<Col xs={3} >
+			<Label>{stateStrategyObj.name}</Label>
+			</Col>
 			<ButtonGroup>
-			{ConfigConstants.strategies.map(this.renderStrategy, this)}
+			{Object.getOwnPropertySymbols(ConfigConstants.strategies).map(this.renderStrategy, this)}
 			</ButtonGroup>
 			</Col>
 			</form>
 			);
 	}
 
-	renderStrategy(element) {
+	renderStrategy(strategy) {
+		let stateStrategyObj = ConfigConstants.strategies[this.state.strategy];
+		let strategyObj = ConfigConstants.strategies[strategy];
 		return (
-			<Button key={element} onClick={this.changeStrategy.bind(this, element)}>
-			{element}
+			<Button
+			key={strategyObj.name}
+			onClick={this.changeStrategy.bind(this, strategy)}
+			active={stateStrategyObj.name === strategyObj.name}
+			>
+			{strategyObj.name}
 			</Button>
 			);
 	}
 
-	changeStrategy(element, event) {
+	changeStrategy(strategy, event) {
 		event.preventDefault();
 		event.stopPropagation();
 
-		ConfigActions.switchStrategy(element);
+		ConfigActions.switchStrategy(strategy);
 	}
 }
