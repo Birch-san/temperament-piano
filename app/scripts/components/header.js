@@ -11,15 +11,16 @@ const bootstrap = require('react-bootstrap');
 const Button = bootstrap.Button;
 const ButtonGroup = bootstrap.ButtonGroup;
 const Col = bootstrap.Col;
+const Row = bootstrap.Row;
 const Label = bootstrap.Label;
+const Input = bootstrap.Input;
 
 const classNames = require('classnames');
+import InputNum from 'rc-input-number';
 
 function initState() {
 	let config = ConfigStore.getConfig();
-	return {
-		strategy: config.strategy
-	};
+	return config;
 }
 
 export default class extends React.Component {
@@ -41,23 +42,45 @@ export default class extends React.Component {
 	}
 
 	render() {
-		let classes = classNames( {
-			'header': true,
-			'form-horizontal': false
-		});
 
 		let stateStrategyObj = ConfigConstants.strategies[this.state.strategy];
 
 		return (
-			<form className={classes}>
-			<Col xs={6} >
-			<Col xs={3} >
-			<Label>{stateStrategyObj.name}</Label>
-			</Col>
-			<ButtonGroup>
-			{Object.getOwnPropertySymbols(ConfigConstants.strategies).map(this.renderStrategy, this)}
-			</ButtonGroup>
-			</Col>
+			<form className={classNames({
+					'header': true,
+					'form-horizontal': false
+				})}>
+			
+				<Col xs={4}>
+				<Label>Generator</Label>
+				<div className={classNames({
+					'input-group': true
+				})}>
+					<ButtonGroup>
+					{Object.getOwnPropertySymbols(ConfigConstants.strategies).map(this.renderStrategy, this)}
+					</ButtonGroup>
+					</div>
+				</Col>
+				<Col xs={4} className={classNames({
+					'form-group': true
+				})}>
+					<Label className={classNames({
+						// 'input-group-addon': true
+						})}>Octave</Label>
+					<Col xs={3} className={classNames({
+					'input-group': true
+					})}>
+						<InputNum
+						min={1} max={10} step={1}
+						className={classNames({
+						'form-control': true,
+						'input': true
+						})}
+						value={this.state.octaveStart}
+						onChange={this.handleChange.bind(this, 'octaveStart')}
+						/>
+					</Col>
+				</Col>
 			</form>
 			);
 	}
@@ -81,5 +104,9 @@ export default class extends React.Component {
 		event.stopPropagation();
 
 		ConfigActions.switchStrategy(strategy);
+	}
+
+	handleChange(ref, value) {
+		ConfigActions.changeInt(ref, value);
 	}
 }

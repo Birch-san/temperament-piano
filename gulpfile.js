@@ -61,7 +61,7 @@ var bundler = {
   }
 };
 
-gulp.task('styles', function() {
+gulp.task('scss', function() {
   return $.rubySass('app/styles/main.scss', {
       style: 'expanded',
       precision: 10,
@@ -72,6 +72,17 @@ gulp.task('styles', function() {
     .pipe(gulp.dest('dist/styles'))
     .pipe($.size())
 	  .pipe($.connect.reload());
+});
+
+gulp.task('less', function() {
+  return gulp.src('app/styles/**/*.less')
+  .pipe($.less({
+    paths: [ ]
+  }))
+  // .on('error', $.util.log.bind($.util, 'Less Error'))
+  .pipe(gulp.dest('dist/styles'))
+  .pipe($.size())
+  .pipe($.connect.reload());
 });
 
 gulp.task('scripts', function() {
@@ -157,7 +168,7 @@ gulp.task('minify', ['minify:js', 'minify:css']);
 
 gulp.task('clean', del.bind(null, 'dist'));
 
-gulp.task('bundle', ['html', 'styles', 'scripts', 'images', 'fonts', 'extras']);
+gulp.task('bundle', ['html', 'scss', 'less', 'scripts', 'images', 'fonts', 'extras']);
 
 gulp.task('clean-bundle', sync(['clean', 'bundle']));
 
@@ -174,7 +185,8 @@ gulp.task('default', ['build']);
 gulp.task('watch', sync(['clean-bundle', 'serve']), function() {
   bundler.watch();
   gulp.watch('app/*.html', ['html']);
-  gulp.watch('app/styles/**/*.scss', ['styles']);
+  gulp.watch('app/styles/**/*.scss', ['scss']);
+  gulp.watch('app/styles/**/*.less', ['less']);
   gulp.watch('app/images/**/*', ['images']);
   gulp.watch('app/fonts/**/*', ['fonts']);
 });

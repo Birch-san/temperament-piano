@@ -4,7 +4,7 @@ import Fraction from '../classes/Fraction';
 import ConfigConstants from '../constants/ConfigConstants';
 import AppDispatcher from '../dispatchers/AppDispatcher';
 
-const _ = require('lodash');
+import _ from 'lodash';
 
 let CHANGE_EVENT = 'change';
 
@@ -28,6 +28,13 @@ function switchStrategy(newStrategy) {
 		return false;
 	}
 	config.strategy = newStrategy;
+}
+
+function changeInt(ref, value) {
+	if (config[ref] === value) {
+		return false;
+	}
+	config[ref] = +value;
 }
 
 let emitter = new EventEmitter();
@@ -56,12 +63,18 @@ class ConfigStore {
 ConfigStore.dispatcherIndex = AppDispatcher.register((payload) => {
 	let action = payload.action;
 
+	let changed = false;
+
 	switch(action.actionType) {
 		case ConfigConstants.switchStrategy:
-			if (switchStrategy(action.to) !== false) {
-				ConfigStore.emitChange();
-			}
+			changed = switchStrategy(action.to);
 			break;
+		case ConfigConstants.changeInt:
+			changed = changeInt(action.ref, action.to);
+			break;
+	}
+	if (changed !== false) {
+		ConfigStore.emitChange();
 	}
 
 	return true; // No errors. Needed by promise in Dispatcher.

@@ -8,4 +8,12 @@ export default class {
 			to: strategy
 		})
 	}
+
+	static changeInt(ref, value) {
+		AppDispatcher.handleViewAction({
+			actionType: ConfigConstants.changeInt,
+			ref: ref,
+			to: value
+		})
+	}
 }

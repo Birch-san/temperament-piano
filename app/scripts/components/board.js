@@ -352,6 +352,7 @@ export default class extends React.Component {
 			scaleModuloMode);
 
 		let octaves = _.range(this.state.octaveStart, this.state.octaveStart+this.state.numOctaves);
+		// console.log(this.state.octaveStart, this.state.octaveStart+this.state.numOctaves);
 
 		var classes = classNames( {
 			'octaveList': true,

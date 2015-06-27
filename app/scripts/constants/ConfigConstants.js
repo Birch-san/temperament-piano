@@ -1,6 +1,10 @@
 export default class {
 	static get switchStrategy() {
-		return 'switch';
+		return Symbol.for('switchStrategy');
+	}
+
+	static get changeInt() {
+		return Symbol.for('changeInt');
 	}
 
 	static get strategies() {
